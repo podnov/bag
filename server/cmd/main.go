@@ -1,5 +1,6 @@
 package main
 
+import "encoding/json"
 import "fmt"
 import "os"
 
@@ -20,6 +21,24 @@ func main() {
 	}
 
 	fmt.Printf("Account balance: %d\n", balance)
+
+	transactions, err := client.GetAccountTokenTransactions(accountAddress, tokenAddress)
+
+	if err != nil {
+		fmt.Println(err)
+		fmt.Sprintf("Error: %v", fmt.Sprint(err))
+		os.Exit(1)
+	}
+
+	raw, err := json.MarshalIndent(transactions, "", "	")
+
+	if err != nil {
+		fmt.Println(err)
+		fmt.Sprintf("Error: %v", fmt.Sprint(err))
+		os.Exit(1)
+	}
+
+	fmt.Printf("Account transactions:\n%s\n", raw)
 	os.Exit(0)
 }
 
