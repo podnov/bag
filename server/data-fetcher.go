@@ -59,9 +59,11 @@ func (df *DataFetcher) GetAccountTokenStatistics(accountAddress string, tokenAdd
 	value := tokenCount * price
 	earnedTokenCount := float64(earned) / divisor
 	earnedValue := earnedTokenCount * price
+	earnedRatio := earnedTokenCount / tokenCount
 
 	return &AccountTokenStatistics{
 		Decimals: decimals,
+		EarnedBalanceRatio: earnedRatio,
 		EarnedTokenCount: earnedTokenCount,
 		EarnedValue: earnedValue,
 		TokenCount: tokenCount,

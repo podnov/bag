@@ -34,12 +34,14 @@ func main() {
 	value := printer.Sprintf("$%f", statistics.Value)
 	earnedTokenCount := printer.Sprintf("%f", statistics.EarnedTokenCount)
 	earnedValue := printer.Sprintf("$%f", statistics.EarnedValue)
+	earnedBalanceRatio := printer.Sprintf("%.2f%%", statistics.EarnedBalanceRatio * 100)
 
 	fmt.Printf("Token Price %.16f as of %s\n", price, priceUpdatedAt)
 	fmt.Printf("Account balance: %s\n", tokenCount)
 	fmt.Printf("Account balance value: %s\n", value)
 	fmt.Printf("Earned tokens: %s\n", earnedTokenCount)
 	fmt.Printf("Earned tokens value: %s\n", earnedValue)
+	fmt.Printf("Earned tokens percent of balance: %s\n", earnedBalanceRatio)
 
 	os.Exit(0)
 }
