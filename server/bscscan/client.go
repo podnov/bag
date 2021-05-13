@@ -50,7 +50,7 @@ func (c *BscApiClient) GetAccountTokenBalance(accountAddress string, tokenAddres
 	return apiResult.Result, nil
 }
 
-func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string, tokenAddress string) ([]TransactionApiResult, error) {
+func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string, tokenAddress string) (*[]TransactionApiResult, error) {
 	url := c.formatAccountTokenTransactionsUrl(accountAddress, tokenAddress)
 
 	client := c.createRestyClient()
@@ -70,5 +70,5 @@ func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string, tokenA
 		return nil, err
 	}
 
-	return apiResult.Result, nil
+	return &apiResult.Result, nil
 }

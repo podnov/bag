@@ -19,11 +19,11 @@ func calculateEarnedTokens(balance int64, transactions *[]bscscan.TransactionApi
 	return balance
 }
 
-func determineTokenDecimal(transactions *[]bscscan.TransactionApiResult) (int) {
-	result := -1
+func determineFirstTransaction(transactions *[]bscscan.TransactionApiResult) (*bscscan.TransactionApiResult) {
+	var result *bscscan.TransactionApiResult = nil
 
 	if len(*transactions) > 0 {
-		result = (*transactions)[0].TokenDecimal
+		result = &(*transactions)[0]
 	}
 
 	return result
@@ -48,9 +48,13 @@ func (df *DataFetcher) GetAccountTokenStatistics(accountAddress string, tokenAdd
 		return nil, err
 	}
 
-	earned := calculateEarnedTokens(balance, &transactions)
-	decimals := determineTokenDecimal(&transactions)
+	earned := calculateEarnedTokens(balance, transactions)
+	firstTransaction := determineFirstTransaction(transactions)
 
+	firstTransactionTime := time.Unix(firstTransaction.TimeStamp, 0)
+	tokenName := firstTransaction.TokenName
+	decimals := firstTransaction.TokenDecimal
+	daysSinceFirstTransaction := time.Now().Sub(firstTransactionTime).Hours() / 24
 	divisor := math.Pow10(decimals)
 	price := token.Data.Price
 	priceUpdatedAt := time.Unix(0, token.UpdatedAt * int64(time.Millisecond))
@@ -58,15 +62,28 @@ func (df *DataFetcher) GetAccountTokenStatistics(accountAddress string, tokenAdd
 	tokenCount := float64(balance) / divisor
 	value := tokenCount * price
 	earnedTokenCount := float64(earned) / divisor
+	earnedTokenCountPerDay := earnedTokenCount / daysSinceFirstTransaction
+	earnedTokenCountPerWeek := earnedTokenCountPerDay * 7
 	earnedValue := earnedTokenCount * price
+	earnedValuePerDay := earnedTokenCountPerDay * price
+	earnedValuePerWeek := earnedTokenCountPerWeek * price
 	earnedRatio := earnedTokenCount / tokenCount
 
 	return &AccountTokenStatistics{
+		AccountAddress: accountAddress,
+		DaysSinceFirstTransaction: daysSinceFirstTransaction,
 		Decimals: decimals,
 		EarnedBalanceRatio: earnedRatio,
 		EarnedTokenCount: earnedTokenCount,
+		EarnedTokenCountPerDay: earnedTokenCountPerDay,
+		EarnedTokenCountPerWeek: earnedTokenCountPerWeek,
 		EarnedValue: earnedValue,
+		EarnedValuePerDay: earnedValuePerDay,
+		EarnedValuePerWeek: earnedValuePerWeek,
+		FirstTransactionTime: firstTransactionTime,
+		TokenAddress: tokenAddress,
 		TokenCount: tokenCount,
+		TokenName: tokenName,
 		TokenPrice: price,
 		TokenPriceUpdatedAt: priceUpdatedAt,
 		Value: value,

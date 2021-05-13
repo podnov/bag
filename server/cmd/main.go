@@ -28,20 +28,32 @@ func main() {
 
 	printer := message.NewPrinter(message.MatchLanguage("en"))
 
+	tokenName := statistics.TokenName
 	price := statistics.TokenPrice
 	priceUpdatedAt := statistics.TokenPriceUpdatedAt
 	tokenCount := printer.Sprintf("%f", statistics.TokenCount)
 	value := printer.Sprintf("$%f", statistics.Value)
 	earnedTokenCount := printer.Sprintf("%f", statistics.EarnedTokenCount)
+	earnedTokenCountPerDay := printer.Sprintf("%f", statistics.EarnedTokenCountPerDay)
+	earnedTokenCountPerWeek := printer.Sprintf("%f", statistics.EarnedTokenCountPerWeek)
 	earnedValue := printer.Sprintf("$%f", statistics.EarnedValue)
+	earnedValuePerDay := printer.Sprintf("$%f", statistics.EarnedValuePerDay)
+	earnedValuePerWeek := printer.Sprintf("$%f", statistics.EarnedValuePerWeek)
 	earnedBalanceRatio := printer.Sprintf("%.2f%%", statistics.EarnedBalanceRatio * 100)
+	firstTransactionDate := statistics.FirstTransactionTime
 
+	fmt.Printf("Account information for token %s (%s)\n", tokenName, tokenAddress)
 	fmt.Printf("Token Price %.16f as of %s\n", price, priceUpdatedAt)
-	fmt.Printf("Account balance: %s\n", tokenCount)
-	fmt.Printf("Account balance value: %s\n", value)
+	fmt.Printf("Account tokens balance: %s\n", tokenCount)
+	fmt.Printf("Account tokens value: %s\n", value)
 	fmt.Printf("Earned tokens: %s\n", earnedTokenCount)
 	fmt.Printf("Earned tokens value: %s\n", earnedValue)
 	fmt.Printf("Earned tokens percent of balance: %s\n", earnedBalanceRatio)
+	fmt.Printf("First transaction date: %s\n", firstTransactionDate)
+	fmt.Printf("Earned tokens per day: %s\n", earnedTokenCountPerDay)
+	fmt.Printf("Earned tokens value per day: %s\n", earnedValuePerDay)
+	fmt.Printf("Earned tokens per week: %s\n", earnedTokenCountPerWeek)
+	fmt.Printf("Earned tokens value per week: %s\n", earnedValuePerWeek)
 
 	os.Exit(0)
 }
