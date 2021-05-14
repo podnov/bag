@@ -6,7 +6,8 @@ import "os"
 
 import "github.com/podnov/bag/server"
 import "github.com/podnov/bag/server/bscscan"
-import "github.com/podnov/bag/server/pancakeswap"
+import pcsv1 "github.com/podnov/bag/server/pancakeswap/v1"
+import pcsv2 "github.com/podnov/bag/server/pancakeswap/v2"
 
 import "golang.org/x/text/message"
 
@@ -17,9 +18,10 @@ func main() {
 	//accountAddress = "0x378Ec8Be66FD1EeAC595009c37A83e5c446EE146"
 
 	bscClient := &bscscan.BscApiClient{}
-	pcsClient := &pancakeswap.PancakeswapApiClient{}
+	pcsv1Client := &pcsv1.PancakeswapApiClient{}
+	pcsv2Client := &pcsv2.PancakeswapApiClient{}
 
-	dataFetcher := server.NewDataFetcher(bscClient, pcsClient)
+	dataFetcher := server.NewDataFetcher(bscClient, pcsv1Client, pcsv2Client)
 
 	statistics, err := dataFetcher.GetAccountStatistics(accountAddress)
 

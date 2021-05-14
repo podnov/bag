@@ -1,4 +1,4 @@
-package pancakeswap
+package v2
 
 type TokenApiResult struct {
 	UpdatedAt int64 `json:"updated_at"`

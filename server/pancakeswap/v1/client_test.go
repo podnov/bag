@@ -1,4 +1,4 @@
-package pancakeswap
+package v1
 
 import "testing"
 
@@ -9,7 +9,7 @@ func Test_formatTokenUrl(t *testing.T) {
 
 	actual := client.formatTokenUrl(givenTokenAddress)
 
-	expected := "https://api.pancakeswap.info/api/v2/tokens/given-token-address"
+	expected := "https://api.pancakeswap.info/api/tokens/given-token-address"
 
 	if actual != expected {
 		t.Errorf("Got %s; want %s", actual, expected)

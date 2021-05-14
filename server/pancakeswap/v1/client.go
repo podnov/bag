@@ -1,11 +1,11 @@
-package pancakeswap
+package v1
 
 import "encoding/json"
 import "fmt"
 
 import "github.com/go-resty/resty/v2"
 
-const apiBaseUrl = "https://api.pancakeswap.info/api/v2"
+const apiBaseUrl = "https://api.pancakeswap.info/api"
 
 // TODO handle client invocation failures
 
