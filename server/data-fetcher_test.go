@@ -1,6 +1,7 @@
 package server
 
 import "math/big"
+import "strings"
 import "testing"
 
 import "github.com/podnov/bag/server/bscscan"
@@ -12,17 +13,17 @@ func Test_calculateEarnedRawTokens(t *testing.T) {
 
 	givenTransactions := []bscscan.TransactionApiResult {
 		bscscan.TransactionApiResult {
-			From: givenSwapAddress,
+			From: strings.ToUpper(givenSwapAddress), // addresses are case insensitive
 			Value: "101", // buy
 			To: givenAccountAddress,
 		},
 		bscscan.TransactionApiResult {
-			From: givenAccountAddress,
+			From: strings.ToUpper(givenAccountAddress),
 			Value: "202", // sell
 			To: givenSwapAddress,
 		},
 		bscscan.TransactionApiResult {
-			From: givenSwapAddress,
+			From: strings.ToUpper(givenSwapAddress),
 			Value: "303", // buy
 			To: givenAccountAddress,
 		},

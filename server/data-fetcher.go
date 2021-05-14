@@ -4,6 +4,7 @@ import "errors"
 import "fmt"
 import "math"
 import "math/big"
+import "strings"
 import "time"
 
 import "github.com/podnov/bag/server/bscscan"
@@ -20,13 +21,13 @@ func calculateEarnedRawTokens(accountAddress string, balance *big.Int, transacti
 	result := new(big.Int).Set(balance)
 
 	for _, transaction := range transactions {
-		value,err := parseBigInt(transaction.Value)
+		value, err := parseBigInt(transaction.Value)
 
 		if err != nil {
 			return nil, err
 		}
 
-		if transaction.To == accountAddress {
+		if strings.EqualFold(transaction.To, accountAddress) {
 			result.Sub(result, value)
 		} else {
 			result.Add(result, value)
