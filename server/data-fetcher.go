@@ -16,7 +16,7 @@ type DataFetcher struct {
 	pcsClient *pancakeswap.PancakeswapApiClient
 }
 
-func calculateEarnedRawTokens(balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
+func calculateEarnedRawTokens(accountAddress string, balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
 	result := new(big.Int).Set(balance)
 
 	for _, transaction := range transactions {
@@ -26,7 +26,11 @@ func calculateEarnedRawTokens(balance *big.Int, transactions []bscscan.Transacti
 			return nil, err
 		}
 
-		result.Sub(result, value)
+		if transaction.To == accountAddress {
+			result.Sub(result, value)
+		} else {
+			result.Add(result, value)
+		}
 	}
 
 	return result, nil
@@ -51,7 +55,7 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 		return AccountTokenStatistics{}, err
 	}
 
-	rawEarned, err := calculateEarnedRawTokens(rawBalance, transactions)
+	rawEarned, err := calculateEarnedRawTokens(accountAddress, rawBalance, transactions)
 
 	if err != nil {
 		return AccountTokenStatistics{}, err

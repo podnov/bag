@@ -6,27 +6,35 @@ import "testing"
 import "github.com/podnov/bag/server/bscscan"
 
 func Test_calculateEarnedRawTokens(t *testing.T) {
+	givenAccountAddress := "given-account-address"
+	givenSwapAddress := "given-swap-address"
 	givenBalance := big.NewInt(42000)
 
 	givenTransactions := []bscscan.TransactionApiResult {
 		bscscan.TransactionApiResult {
-			Value: "101",
+			From: givenSwapAddress,
+			Value: "101", // buy
+			To: givenAccountAddress,
 		},
 		bscscan.TransactionApiResult {
-			Value: "202",
+			From: givenAccountAddress,
+			Value: "202", // sell
+			To: givenSwapAddress,
 		},
 		bscscan.TransactionApiResult {
-			Value: "303",
+			From: givenSwapAddress,
+			Value: "303", // buy
+			To: givenAccountAddress,
 		},
 	}
 
-	actual, err := calculateEarnedRawTokens(givenBalance, givenTransactions)
+	actual, err := calculateEarnedRawTokens(givenAccountAddress, givenBalance, givenTransactions)
 
 	if err != nil {
 		t.Errorf("Got %s; want nil", err)
 	}
 
-	expected := big.NewInt(41394)
+	expected := big.NewInt(41798)
 
 	if actual.Cmp(expected) != 0 {
 		t.Errorf("Got %s; want %s", actual, expected)
