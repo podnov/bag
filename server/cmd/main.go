@@ -10,9 +10,10 @@ import "github.com/podnov/bag/server/pancakeswap"
 
 import "golang.org/x/text/message"
 
+var oneHundred = big.NewFloat(float64(100))
+
 func main() {
 	accountAddress := "0x5a6d55a598cba3a9fdafd0876c9ca02238c03e38"
-	//tokenAddress := "0x8076c74c5e3f5852037f31ff0093eeb8c8add8d3"
 
 	bscClient := &bscscan.BscApiClient{}
 	pcsClient := &pancakeswap.PancakeswapApiClient{}
@@ -31,13 +32,21 @@ func main() {
 	tokens := statistics.Tokens
 	tokenCount := len(tokens)
 
-	for i, tokenStatistics := range tokens {
+	for _, tokenStatistics := range tokens {
 		printTokenStatistics(printer, tokenStatistics)
-
-		if i < tokenCount -1  {
-			fmt.Println("")
-		}
+		fmt.Println("")
 	}
+
+	fmt.Printf("=== Summary ===\n")
+	fmt.Printf("AccountAddress: %v\n", statistics.AccountAddress)
+	fmt.Printf("Tokens held: %v\n", tokenCount)
+	fmt.Printf("Transaction count: %v\n", statistics.TransactionCount)
+	fmt.Printf("First transaction date: %s\n", statistics.FirstTransactionTime)
+	fmt.Printf("Account value: %v\n", printer.Sprintf("$%f", statistics.Value))
+	fmt.Printf("Earned value: %v\n", printer.Sprintf("$%f", statistics.EarnedValue))
+	fmt.Printf("Earned percent of value: %.2f%%\n", new(big.Float).Mul(statistics.EarnedValueRatio, oneHundred))
+	fmt.Printf("Earned value per day: %v\n", printer.Sprintf("$%f", statistics.EarnedValuePerDay))
+	fmt.Printf("Earned value per week: %v\n", printer.Sprintf("$%f", statistics.EarnedValuePerWeek))
 
 	os.Exit(0)
 }
@@ -55,19 +64,19 @@ func printTokenStatistics(printer *message.Printer, statistics server.AccountTok
 	earnedValue := printer.Sprintf("$%f", statistics.EarnedValue)
 	earnedValuePerDay := printer.Sprintf("$%f", statistics.EarnedValuePerDay)
 	earnedValuePerWeek := printer.Sprintf("$%f", statistics.EarnedValuePerWeek)
-	earnedBalanceRatio := printer.Sprintf("%.2f%%", new(big.Float).Mul(statistics.EarnedBalanceRatio, big.NewFloat(float64(100))))
+	earnedBalanceRatio := printer.Sprintf("%.2f%%", new(big.Float).Mul(statistics.EarnedBalanceRatio, oneHundred))
 	firstTransactionDate := statistics.FirstTransactionTime
 	transactionCount := statistics.TransactionCount
 
 	fmt.Printf("Account information for token %s (%s)\n", tokenName, tokenAddress)
 	fmt.Printf("Token Price %.16f as of %s\n", price, priceUpdatedAt)
+	fmt.Printf("Transaction count: %v\n", transactionCount)
+	fmt.Printf("First transaction date: %s\n", firstTransactionDate)
 	fmt.Printf("Account tokens balance: %s\n", tokenCount)
 	fmt.Printf("Account tokens value: %s\n", value)
 	fmt.Printf("Earned tokens: %s\n", earnedTokenCount)
 	fmt.Printf("Earned tokens value: %s\n", earnedValue)
 	fmt.Printf("Earned tokens percent of balance: %s\n", earnedBalanceRatio)
-	fmt.Printf("Transaction count: %v\n", transactionCount)
-	fmt.Printf("First transaction date: %s\n", firstTransactionDate)
 	fmt.Printf("Earned tokens per day: %s\n", earnedTokenCountPerDay)
 	fmt.Printf("Earned tokens value per day: %s\n", earnedValuePerDay)
 	fmt.Printf("Earned tokens per week: %s\n", earnedTokenCountPerWeek)

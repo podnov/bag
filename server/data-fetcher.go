@@ -146,6 +146,10 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
 
 	tokenIndex := 0
+	earnedValue := big.NewFloat(float64(0))
+	var firstTransactionTime time.Time
+	transactionCount := 0
+	value := big.NewFloat(float64(0))
 
 	for tokenAddress, tokenTransactions := range transactionsByToken {
 		tokenStatistics, err := df.createAccountTokenStatistics(accountAddress, tokenAddress, tokenTransactions)
@@ -154,12 +158,35 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 			return AccountStatistics{}, err
 		}
 
+		earnedValue.Add(earnedValue, tokenStatistics.EarnedValue)
+		transactionCount += tokenStatistics.TransactionCount
+		value.Add(value, tokenStatistics.Value)
+
+		if tokenIndex == 0 {
+			firstTransactionTime = tokenStatistics.FirstTransactionTime
+		} else if tokenStatistics.FirstTransactionTime.Before(firstTransactionTime) {
+			firstTransactionTime = tokenStatistics.FirstTransactionTime
+		}
+
 		tokens[tokenIndex] = tokenStatistics
 		tokenIndex++
 	}
 
+	earnedValueRatio := new(big.Float).Quo(earnedValue, value)
+	daysSinceFirstTransaction := big.NewFloat(time.Now().Sub(firstTransactionTime).Hours() / 24)
+	earnedValuePerDay := new(big.Float).Quo(earnedValue, daysSinceFirstTransaction)
+	earnedValuePerWeek := new(big.Float).Mul(earnedValuePerDay, daysPerWeek)
+
 	return AccountStatistics{
+		AccountAddress: accountAddress,
+		EarnedValue: earnedValue,
+		EarnedValuePerDay: earnedValuePerDay,
+		EarnedValuePerWeek: earnedValuePerWeek,
+		EarnedValueRatio: earnedValueRatio,
+		FirstTransactionTime: firstTransactionTime,
 		Tokens: tokens,
+		TransactionCount: transactionCount,
+		Value: value,
 	}, nil
 }
 
