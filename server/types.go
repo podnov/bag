@@ -1,23 +1,30 @@
 package server
 
+import "math/big"
 import "time"
+
+type AccountStatistics struct {
+	Tokens []AccountTokenStatistics
+}
 
 type AccountTokenStatistics struct {
 	AccountAddress string
-	DaysSinceFirstTransaction float64
-	Decimals int
-	EarnedBalanceRatio float64
-	EarnedTokenCount float64
-	EarnedTokenCountPerDay float64
-	EarnedTokenCountPerWeek float64
-	EarnedValue float64
-	EarnedValuePerDay float64
-	EarnedValuePerWeek float64
+	DaysSinceFirstTransaction *big.Float
+	Decimals *big.Int
+	EarnedBalanceRatio *big.Float
+	EarnedTokenCount *big.Float
+	EarnedTokenCountPerDay *big.Float
+	EarnedTokenCountPerWeek *big.Float
+	EarnedValue *big.Float
+	EarnedValuePerDay *big.Float
+	EarnedValuePerWeek *big.Float
 	FirstTransactionTime time.Time
 	TokenAddress string
-	TokenCount float64
+	TokenCount *big.Float
 	TokenName string
-	TokenPrice float64
+	TokenPrice *big.Float
 	TokenPriceUpdatedAt time.Time
-	Value float64
+	TransactionCount int
+	Value *big.Float
 }
+

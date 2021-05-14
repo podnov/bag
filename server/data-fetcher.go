@@ -1,78 +1,87 @@
 package server
 
+import "errors"
+import "fmt"
 import "math"
+import "math/big"
 import "time"
 
 import "github.com/podnov/bag/server/bscscan"
 import "github.com/podnov/bag/server/pancakeswap"
+
+var daysPerWeek = big.NewFloat(float64(7))
 
 type DataFetcher struct {
 	bscClient *bscscan.BscApiClient
 	pcsClient *pancakeswap.PancakeswapApiClient
 }
 
-func calculateEarnedTokens(balance int64, transactions *[]bscscan.TransactionApiResult) (int64) {
-	for _, transaction := range *transactions {
-		balance -= transaction.Value
+func calculateEarnedRawTokens(balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
+	result := new(big.Int).Set(balance)
+
+	for _, transaction := range transactions {
+		value,err := parseBigInt(transaction.Value)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result.Sub(result, value)
 	}
 
-	return balance
+	return result, nil
 }
 
-func determineFirstTransaction(transactions *[]bscscan.TransactionApiResult) (*bscscan.TransactionApiResult) {
-	var result *bscscan.TransactionApiResult = nil
-
-	if len(*transactions) > 0 {
-		result = &(*transactions)[0]
-	}
-
-	return result
-}
-
-func (df *DataFetcher) GetAccountTokenStatistics(accountAddress string, tokenAddress string) (*AccountTokenStatistics, error) {
-	balance, err := df.bscClient.GetAccountTokenBalance(accountAddress, tokenAddress)
-
-	if err != nil {
-		return nil, err
-	}
-
-	transactions, err := df.bscClient.GetAccountTokenTransactions(accountAddress, tokenAddress)
-
-	if err != nil {
-		return nil, err
-	}
-
+func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, tokenAddress string, transactions []bscscan.TransactionApiResult) (AccountTokenStatistics, error) {
 	token, err := df.pcsClient.GetToken(tokenAddress)
 
 	if err != nil {
-		return nil, err
+		return AccountTokenStatistics{}, err
 	}
 
-	earned := calculateEarnedTokens(balance, transactions)
+	untypedRawBalance, err := df.bscClient.GetAccountTokenBalance(accountAddress, tokenAddress)
+
+	if err != nil {
+		return AccountTokenStatistics{}, err
+	}
+
+	rawBalance, err := parseBigInt(untypedRawBalance)
+
+	if err != nil {
+		return AccountTokenStatistics{}, err
+	}
+
+	rawEarned, err := calculateEarnedRawTokens(rawBalance, transactions)
+
+	if err != nil {
+		return AccountTokenStatistics{}, err
+	}
+
 	firstTransaction := determineFirstTransaction(transactions)
 
 	firstTransactionTime := time.Unix(firstTransaction.TimeStamp, 0)
 	tokenName := firstTransaction.TokenName
 	decimals := firstTransaction.TokenDecimal
-	daysSinceFirstTransaction := time.Now().Sub(firstTransactionTime).Hours() / 24
-	divisor := math.Pow10(decimals)
-	price := token.Data.Price
+	daysSinceFirstTransaction := big.NewFloat(time.Now().Sub(firstTransactionTime).Hours() / 24)
+	divisor := big.NewFloat(math.Pow10(decimals))
+	price := big.NewFloat(token.Data.Price)
 	priceUpdatedAt := time.Unix(0, token.UpdatedAt * int64(time.Millisecond))
+	transactionCount := len(transactions)
 
-	tokenCount := float64(balance) / divisor
-	value := tokenCount * price
-	earnedTokenCount := float64(earned) / divisor
-	earnedTokenCountPerDay := earnedTokenCount / daysSinceFirstTransaction
-	earnedTokenCountPerWeek := earnedTokenCountPerDay * 7
-	earnedValue := earnedTokenCount * price
-	earnedValuePerDay := earnedTokenCountPerDay * price
-	earnedValuePerWeek := earnedTokenCountPerWeek * price
-	earnedRatio := earnedTokenCount / tokenCount
+	tokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawBalance), divisor)
+	value := new(big.Float).Mul(tokenCount, price)
+	earnedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawEarned), divisor)
+	earnedTokenCountPerDay := new(big.Float).Quo(earnedTokenCount, daysSinceFirstTransaction)
+	earnedTokenCountPerWeek := new(big.Float).Mul(earnedTokenCountPerDay, daysPerWeek)
+	earnedValue := new(big.Float).Mul(earnedTokenCount, price)
+	earnedValuePerDay := new(big.Float).Mul(earnedTokenCountPerDay, price)
+	earnedValuePerWeek := new(big.Float).Mul(earnedTokenCountPerWeek, price)
+	earnedRatio := new(big.Float).Quo(earnedTokenCount, tokenCount)
 
-	return &AccountTokenStatistics{
+	return AccountTokenStatistics{
 		AccountAddress: accountAddress,
 		DaysSinceFirstTransaction: daysSinceFirstTransaction,
-		Decimals: decimals,
+		Decimals: big.NewInt(int64(decimals)),
 		EarnedBalanceRatio: earnedRatio,
 		EarnedTokenCount: earnedTokenCount,
 		EarnedTokenCountPerDay: earnedTokenCountPerDay,
@@ -86,15 +95,94 @@ func (df *DataFetcher) GetAccountTokenStatistics(accountAddress string, tokenAdd
 		TokenName: tokenName,
 		TokenPrice: price,
 		TokenPriceUpdatedAt: priceUpdatedAt,
+		TransactionCount: transactionCount,
 		Value: value,
 	}, nil
-
 }
 
-func NewDataFetcher(bscClient *bscscan.BscApiClient, pcsClient *pancakeswap.PancakeswapApiClient) (*DataFetcher) {
-	return &DataFetcher{
+func determineFirstTransaction(transactions []bscscan.TransactionApiResult) (bscscan.TransactionApiResult) {
+	var result bscscan.TransactionApiResult
+
+	if len(transactions) > 0 {
+		result = transactions[0]
+	} else {
+		result = bscscan.TransactionApiResult{}
+	}
+
+	return result
+}
+
+func mapTokenTransactions(transactions []bscscan.TransactionApiResult) (map[string][]bscscan.TransactionApiResult) {
+	result := make(map[string][]bscscan.TransactionApiResult)
+
+	for _, transaction := range transactions {
+		tokenAddress := transaction.ContractAddress
+		tokenTransactions, exists := result[tokenAddress];
+
+		if exists {
+			tokenTransactions = append(tokenTransactions, transaction)
+		} else {
+			tokenTransactions = []bscscan.TransactionApiResult{transaction}
+		}
+
+		result[tokenAddress] = tokenTransactions
+	}
+
+	return result
+}
+
+func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStatistics, error) {
+	transactions, err := df.bscClient.GetAccountTokenTransactions(accountAddress)
+
+	if err != nil {
+		return AccountStatistics{}, err
+	}
+
+	transactionsByToken := mapTokenTransactions(transactions)
+	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
+
+	tokenIndex := 0
+
+	for tokenAddress, tokenTransactions := range transactionsByToken {
+		tokenStatistics, err := df.createAccountTokenStatistics(accountAddress, tokenAddress, tokenTransactions)
+
+		if err != nil {
+			return AccountStatistics{}, err
+		}
+
+		tokens[tokenIndex] = tokenStatistics
+		tokenIndex++
+	}
+
+	return AccountStatistics{
+		Tokens: tokens,
+	}, nil
+}
+
+func (df *DataFetcher) GetAccountStatisticsForToken(accountAddress string, tokenAddress string) (AccountTokenStatistics, error) {
+	transactions, err := df.bscClient.GetAccountTokenTransactionsForToken(accountAddress, tokenAddress)
+
+	if err != nil {
+		return AccountTokenStatistics{}, err
+	}
+
+	return df.createAccountTokenStatistics(accountAddress, tokenAddress, transactions)
+}
+
+func NewDataFetcher(bscClient *bscscan.BscApiClient, pcsClient *pancakeswap.PancakeswapApiClient) (DataFetcher) {
+	return DataFetcher{
 		bscClient: bscClient,
 		pcsClient: pcsClient,
 	}
+}
+
+func parseBigInt(value string) (*big.Int, error) {
+	result, success := new(big.Int).SetString(value, 10)
+
+	if !success {
+		return nil, errors.New(fmt.Sprintf("Could not parse [%s] as big.Int", value))
+	}
+
+	return result, nil
 }
 

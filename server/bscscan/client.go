@@ -22,12 +22,15 @@ func (c *BscApiClient) formatAccountTokenBalanceUrl(accountAddress string, token
 	return fmt.Sprintf("%s?module=account&action=tokenbalance&address=%s&contractaddress=%s&tag=latest&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
 }
 
-func (c *BscApiClient) formatAccountTokenTransactionsUrl(accountAddress string, tokenAddress string) (string) {
-	// TODO pagination
-	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&contractaddress=%s&page=1&offset=100&sort=asc&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
+func (c *BscApiClient) formatAccountTokenTransactionsUrl(accountAddress string) (string) {
+	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, apiKey)
 }
 
-func (c *BscApiClient) GetAccountTokenBalance(accountAddress string, tokenAddress string) (int64, error) {
+func (c *BscApiClient) formatAccountTokenTransactionsForTokenUrl(accountAddress string, tokenAddress string) (string) {
+	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&contractaddress=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
+}
+
+func (c *BscApiClient) GetAccountTokenBalance(accountAddress string, tokenAddress string) (string, error) {
 	url := c.formatAccountTokenBalanceUrl(accountAddress, tokenAddress)
 
 	client := c.createRestyClient()
@@ -36,22 +39,22 @@ func (c *BscApiClient) GetAccountTokenBalance(accountAddress string, tokenAddres
 		Get(url)
 
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 
-	apiResult := Int64ApiResult{}
+	apiResult := StringApiResult{}
 
 	err = json.Unmarshal(resp.Body(), &apiResult)
 
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 
 	return apiResult.Result, nil
 }
 
-func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string, tokenAddress string) (*[]TransactionApiResult, error) {
-	url := c.formatAccountTokenTransactionsUrl(accountAddress, tokenAddress)
+func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string) ([]TransactionApiResult, error) {
+	url := c.formatAccountTokenTransactionsUrl(accountAddress)
 
 	client := c.createRestyClient()
 
@@ -70,5 +73,29 @@ func (c *BscApiClient) GetAccountTokenTransactions(accountAddress string, tokenA
 		return nil, err
 	}
 
-	return &apiResult.Result, nil
+	return apiResult.Result, nil
 }
+
+func (c *BscApiClient) GetAccountTokenTransactionsForToken(accountAddress string, tokenAddress string) ([]TransactionApiResult, error) {
+	url := c.formatAccountTokenTransactionsForTokenUrl(accountAddress, tokenAddress)
+
+	client := c.createRestyClient()
+
+	resp, err := client.R().
+		Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	apiResult := TransactionsApiResult{}
+
+	err = json.Unmarshal(resp.Body(), &apiResult)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return apiResult.Result, nil
+}
+

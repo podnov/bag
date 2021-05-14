@@ -1,9 +1,9 @@
 package bscscan
 
-type Int64ApiResult struct {
+type StringApiResult struct {
 	Status string `json:"status"`
 	Message string `json:"message"`
-	Result int64 `json:"result,string"`
+	Result string `json:"result"`
 }
 
 type TransactionApiResult struct {
@@ -15,7 +15,7 @@ type TransactionApiResult struct {
 	From string `json:"from"`
 	ContractAddress string `json:"contractAddress"`
 	To string `json:"to"`
-	Value int64 `json:"value,string"`
+	Value string `json:"value"`
 	TokenName string `json:"tokenName"`
 	TokenSymbol string `json:"tokenSymbol"`
 	TokenDecimal int `json:"tokenDecimal,string"`
