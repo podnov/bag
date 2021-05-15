@@ -19,7 +19,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: crypto-bag-1
-  GKE_ZONE: us-central1-c
+  GKE_ZONE: us-central1
   DEPLOYMENT_NAME: bag-api-v1
   IMAGE: static-site
 
