@@ -21,7 +21,7 @@ env:
   GKE_CLUSTER: crypto-bag-1
   GKE_ZONE: us-central1
   DEPLOYMENT_NAME: bag-api-v1
-  IMAGE: static-site
+  IMAGE: bag-api 
 
 jobs:
   setup-build-publish-deploy:
