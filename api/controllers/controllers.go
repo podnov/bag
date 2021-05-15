@@ -14,6 +14,14 @@ import (
 )
 var oneHundred = big.NewFloat(float64(100))
 
+func CheckLiveness(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
+func CheckReadiness(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
 func createDataFetcher() (api.DataFetcher) {
 	bscClient := &bscscan.BscApiClient{}
 	pcsv1Client := &pcsv1.PancakeswapApiClient{}
