@@ -10,7 +10,6 @@ spec:
       - pathType: Prefix
         path: "/bag/api/v1"
         backend:
-          service:
-            name: bag-api-v1
-            port:
-              number: 80
+          serviceName: bag-api-v1
+          servicePort: 80
+
