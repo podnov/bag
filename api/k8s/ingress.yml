@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bag-api-v1
+spec:
+  rules:
+  - host: "cryptobag.podnov.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/bag/api/v1"
+        backend:
+          service:
+            name: bag-api-v1
+            port:
+              number: 80
