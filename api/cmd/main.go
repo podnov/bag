@@ -9,6 +9,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/bag/api/v1/accounts/:accountId", controllers.GetAccount) 
+	r.GET("/bag/api/v1/", controllers.CheckContextRoot)
 	r.GET("/bag/api/v1/health/liveness", controllers.CheckLiveness)
 	r.GET("/bag/api/v1/health/readiness", controllers.CheckReadiness)
 

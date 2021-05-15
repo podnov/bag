@@ -14,6 +14,10 @@ import (
 )
 var oneHundred = big.NewFloat(float64(100))
 
+func CheckContextRoot(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
 func CheckLiveness(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
