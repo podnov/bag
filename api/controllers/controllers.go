@@ -22,6 +22,10 @@ func CheckReadiness(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func CheckRoot(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
 func createDataFetcher() (api.DataFetcher) {
 	bscClient := &bscscan.BscApiClient{}
 	pcsv1Client := &pcsv1.PancakeswapApiClient{}
