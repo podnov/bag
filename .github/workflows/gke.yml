@@ -33,6 +33,27 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16.4'
+
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+
+    - name: Run build
+      run: go build -o api/bag-api api/cmd/main.go
+
+    - name: Run vet & lint
+      run: |
+        go vet .
+        golint .
+
+    - name: Run testing
+      run: go test ./... -v
+
     # Setup gcloud CLI
     - uses: google-github-actions/setup-gcloud@v0.2.0
       with:
