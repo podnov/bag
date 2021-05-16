@@ -16,9 +16,7 @@ class WalletStatistics extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		console.log('comp did update');
 		if(!equal(this.props, prevProps)) {
-			console.log('comp did update change');
 			this.setState({
 				isLoading: this.props.isLoading,
 				statistics: this.props.statistics
@@ -28,18 +26,14 @@ class WalletStatistics extends Component {
 
 
 	render() {
-		console.log('render');
 		const isLoading = this.state.isLoading;
 		const statistics = this.state.statistics;
 
 		let content;
 
 		if (isLoading) {
-			console.log('render loading');
 			content = <Loader />;
 		} else if (statistics) {
-			console.log('render statistics');
-
 			let numberFormatter = new Intl.NumberFormat();
 			let currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -98,7 +92,6 @@ class WalletStatistics extends Component {
 				})}
 			</div>;
 		} else {
-			console.log('render else');
 			content = <span className="welcome">Welcome, please enter your wallet address</span>;
 		}
 
