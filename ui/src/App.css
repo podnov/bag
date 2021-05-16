@@ -52,7 +52,7 @@ header {
 }
 
 .content {
-	bottom: 140px;
+	bottom: 145px;
 	overflow-y: scroll;
 	position: fixed;
 	top: 90px;
@@ -63,6 +63,7 @@ footer {
 	background-color: #000080;
 	bottom: 0;
 	color: #F4F4F9;
+	padding-top: 5px;
 	position: fixed;
 	width: 100vw;
 }
