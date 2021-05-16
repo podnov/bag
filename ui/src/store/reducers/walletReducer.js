@@ -6,6 +6,7 @@ import {
 
 const initialState = {
 	address: null,
+	hasError: false,
 	isLoading: false,
 	statistics: null
 }
@@ -15,13 +16,22 @@ export default function reduce(state = initialState, action){
 		case GET_WALLET:
 			return {
 				...state,
+				hasError: false,
 				isLoading: true
+			};
+		case GET_WALLET_ERROR:
+			return {
+				...state,
+				statistics: null,
+				hasError: true,
+				isLoading: false
 			};
 		case GET_WALLET_SUCCESS:
 			return {
 				...state,
-				statistics: action.payload,
-				isLoading: false
+				hasError: false,
+				isLoading: false,
+				statistics: action.payload
 			};
 		default:
 			return state;

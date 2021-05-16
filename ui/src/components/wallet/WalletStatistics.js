@@ -10,6 +10,7 @@ class WalletStatistics extends Component {
 		super(props);
 
 		this.state = {
+			hasError: this.props.hasError,
 			isLoading: this.props.isLoading,
 			statistics: this.props.statistics
 		}
@@ -18,6 +19,7 @@ class WalletStatistics extends Component {
 	componentDidUpdate(prevProps) {
 		if(!equal(this.props, prevProps)) {
 			this.setState({
+				hasError: this.props.hasError,
 				isLoading: this.props.isLoading,
 				statistics: this.props.statistics
 			});
@@ -26,12 +28,17 @@ class WalletStatistics extends Component {
 
 
 	render() {
+		const hasError = this.state.hasError;
 		const isLoading = this.state.isLoading;
 		const statistics = this.state.statistics;
 
 		let content;
 
-		if (isLoading) {
+		if (hasError) {
+			content = <div>
+				Error encountered fetching wallet data. Please verify wallet address and try again.
+			</div>;
+		} else if (isLoading) {
 			content = <Loader />;
 		} else if (statistics) {
 			let numberFormatter = new Intl.NumberFormat();
@@ -104,6 +111,7 @@ class WalletStatistics extends Component {
 }
 
 const mapStateToProps = (state) => ({
+	hasError: state.wallet.hasError,
 	isLoading: state.wallet.isLoading,
 	statistics: state.wallet.statistics
 })

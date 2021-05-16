@@ -12,14 +12,14 @@ export const getWallet = (address) => async dispatch => {
 	dispatch({
 		type: GET_WALLET
 	})
+
 	try{
 		const res = await axios.get(`${apiBaseUrl}/accounts/${address}`)
 		dispatch({
 			type: GET_WALLET_SUCCESS,
 			payload: res.data
 		})
-	}
-	catch(e){
+	} catch(e) {
 		dispatch({
 			type: GET_WALLET_ERROR,
 			payload: console.log(e),
