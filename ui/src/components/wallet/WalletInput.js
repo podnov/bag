@@ -26,12 +26,12 @@ class WalletInput extends Component {
 		return (
 			<div className="walletInput">
 				<label>
-					Wallet Address:
+					Wallet Address:&nbsp;
 					<input
 						type="text"
 						onChange={this.handleAddressChange}
 						value={this.state.address}
-						/>
+						/>&nbsp;
 					<button
 						onClick={this.handleGoClick}
 						>

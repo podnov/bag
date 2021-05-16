@@ -9,7 +9,7 @@ const initialState = {
 	loading:false
 }
 
-export default function(state = initialState, action){
+export default function reduce(state = initialState, action){
 	switch(action.type){
 		case GET_WALLET:
 		return {
