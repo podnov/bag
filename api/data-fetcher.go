@@ -11,8 +11,6 @@ import "github.com/podnov/bag/api/bscscan"
 import pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
 import pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
 
-var daysPerWeek = big.NewFloat(float64(7))
-
 type DataFetcher struct {
 	bscClient *bscscan.BscApiClient
 	pcsv1Client *pcsv1.PancakeswapApiClient
@@ -40,7 +38,7 @@ func calculateEarnedRawTokens(accountAddress string, balance *big.Int, transacti
 }
 
 func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, tokenAddress string, transactions []bscscan.TransactionApiResult) (AccountTokenStatistics, error) {
-	price, priceUpdatedAtUnix, err := df.getTokenPrice(tokenAddress)
+	price, priceUpdatedAtUnix, priceSource, err := df.getTokenPrice(tokenAddress)
 
 	if err != nil {
 		return AccountTokenStatistics{}, err
@@ -69,25 +67,28 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 	firstTransactionTime := time.Unix(firstTransaction.TimeStamp, 0)
 	tokenName := firstTransaction.TokenName
 	decimals := firstTransaction.TokenDecimal
-	daysSinceFirstTransaction := big.NewFloat(time.Now().Sub(firstTransactionTime).Hours() / 24)
 	divisor := big.NewFloat(math.Pow10(decimals))
 	priceUpdatedAt := time.Unix(0, priceUpdatedAtUnix * int64(time.Millisecond))
 	transactionCount := len(transactions)
 
-	tokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawBalance), divisor)
-	value := new(big.Float).Mul(tokenCount, price)
-	earnedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawEarned), divisor)
-	earnedTokenCountPerDay := new(big.Float).Quo(earnedTokenCount, daysSinceFirstTransaction)
-	earnedTokenCountPerWeek := new(big.Float).Mul(earnedTokenCountPerDay, daysPerWeek)
-	earnedValue := new(big.Float).Mul(earnedTokenCount, price)
-	earnedValuePerDay := new(big.Float).Mul(earnedTokenCountPerDay, price)
-	earnedValuePerWeek := new(big.Float).Mul(earnedTokenCountPerWeek, price)
-	earnedRatio := new(big.Float).Quo(earnedTokenCount, tokenCount)
+	bigTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawBalance), divisor)
+	bigEarnedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawEarned), divisor)
+
+	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionTime).Hours() / 24)
+	tokenCount, _ := bigTokenCount.Float64()
+	value := (tokenCount * price)
+	earnedTokenCount, _ := bigEarnedTokenCount.Float64()
+	earnedTokenCountPerDay := (earnedTokenCount / daysSinceFirstTransaction)
+	earnedTokenCountPerWeek := (earnedTokenCountPerDay * 7)
+	earnedValue := (earnedTokenCount * price)
+	earnedValuePerDay := (earnedTokenCountPerDay * price)
+	earnedValuePerWeek := (earnedValuePerDay * 7)
+	earnedRatio := (earnedTokenCount / tokenCount)
 
 	return AccountTokenStatistics{
 		AccountAddress: accountAddress,
 		DaysSinceFirstTransaction: daysSinceFirstTransaction,
-		Decimals: big.NewInt(int64(decimals)),
+		Decimals: decimals,
 		EarnedTokenCount: earnedTokenCount,
 		EarnedTokenCountPerDay: earnedTokenCountPerDay,
 		EarnedTokenCountPerWeek: earnedTokenCountPerWeek,
@@ -100,6 +101,7 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 		TokenCount: tokenCount,
 		TokenName: tokenName,
 		TokenPrice: price,
+		TokenPriceSource: priceSource,
 		TokenPriceUpdatedAt: priceUpdatedAt,
 		TransactionCount: transactionCount,
 		Value: value,
@@ -148,10 +150,10 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
 
 	tokenIndex := 0
-	earnedValue := big.NewFloat(float64(0))
+	earnedValue := float64(0)
 	var firstTransactionAt time.Time
 	transactionCount := 0
-	value := big.NewFloat(float64(0))
+	value := float64(0)
 
 	for tokenAddress, tokenTransactions := range transactionsByToken {
 		tokenStatistics, err := df.createAccountTokenStatistics(accountAddress, tokenAddress, tokenTransactions)
@@ -160,9 +162,9 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 			return AccountStatistics{}, err
 		}
 
-		earnedValue.Add(earnedValue, tokenStatistics.EarnedValue)
+		earnedValue += tokenStatistics.EarnedValue
 		transactionCount += tokenStatistics.TransactionCount
-		value.Add(value, tokenStatistics.Value)
+		value += tokenStatistics.Value
 
 		if tokenIndex == 0 {
 			firstTransactionAt = tokenStatistics.FirstTransactionAt
@@ -174,10 +176,10 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 		tokenIndex++
 	}
 
-	earnedValueRatio := new(big.Float).Quo(earnedValue, value)
-	daysSinceFirstTransaction := big.NewFloat(time.Now().Sub(firstTransactionAt).Hours() / 24)
-	earnedValuePerDay := new(big.Float).Quo(earnedValue, daysSinceFirstTransaction)
-	earnedValuePerWeek := new(big.Float).Mul(earnedValuePerDay, daysPerWeek)
+	earnedValueRatio := (earnedValue / value)
+	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionAt).Hours() / 24)
+	earnedValuePerDay := (earnedValue / daysSinceFirstTransaction)
+	earnedValuePerWeek := (earnedValuePerDay * 7)
 
 	return AccountStatistics{
 		AccountAddress: accountAddress,
@@ -202,11 +204,12 @@ func (df *DataFetcher) GetAccountStatisticsForToken(accountAddress string, token
 	return df.createAccountTokenStatistics(accountAddress, tokenAddress, transactions)
 }
 
-func (df *DataFetcher) getTokenPrice(tokenAddress string) (*big.Float, int64, error) {
+func (df *DataFetcher) getTokenPrice(tokenAddress string) (float64, int64, string, error) {
 	v2Token, err := df.pcsv2Client.GetToken(tokenAddress)
+	source := ""
 
 	if err != nil {
-		return nil, -1, err
+		return -1, -1, source, err
 	}
 
 	price := v2Token.Data.Price
@@ -216,14 +219,17 @@ func (df *DataFetcher) getTokenPrice(tokenAddress string) (*big.Float, int64, er
 		v1Token, err := df.pcsv1Client.GetToken(tokenAddress)
 
 		if err != nil {
-			return nil, -1, err
+			return -1, -1, source, err
 		}
 
 		price = v1Token.Data.Price
 		priceUpdatedAt = v1Token.UpdatedAt
+		source = PANCAKE_SWAP_V1
+	} else {
+		source = PANCAKE_SWAP_V2
 	}
 
-	return big.NewFloat(price), priceUpdatedAt, nil
+	return price, priceUpdatedAt, source, nil
 }
 
 func NewDataFetcher(bscClient *bscscan.BscApiClient, pcsv1Client *pcsv1.PancakeswapApiClient, pcsv2Client *pcsv2.PancakeswapApiClient) (DataFetcher) {
