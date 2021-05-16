@@ -3,6 +3,8 @@ import {connect} from 'react-redux'
 import equal from 'fast-deep-equal'
 import Loader from 'react-loader-spinner'
 
+import './WalletStatistics.css'
+
 class WalletStatistics extends Component {
 	constructor(props) {
 		super(props);
@@ -36,35 +38,36 @@ class WalletStatistics extends Component {
 			content = <Loader />;
 		} else if (statistics) {
 			console.log('render statistics');
-			content = <div className="walletStatistics">
+			content = <div>
 				<h2>Summary</h2>
 				<ul>
-					<li><label>Address:</label> {statistics.accountAddress}</li>
-					<li><label>First Transaction:</label> {statistics.firstTransactionAt}</li>
-					<li><label>Transaction Count:</label> {statistics.transactionCount}</li>
-					<li><label>Value:</label> {statistics.value}</li>
-					<li><label>Earned Value:</label> {statistics.earnedValue}</li>
-					<li><label>Earned Value Per Day:</label> {statistics.earnedValuePerDay}</li>
-					<li><label>Earned Value Per Week:</label> {statistics.earnedValuePerWeek}</li>
+					<li key="summaryAddress"><label>Address:</label> {statistics.accountAddress}</li>
+					<li key="summaryFirstTransactionAt"><label>First Transaction:</label> {statistics.firstTransactionAt}</li>
+					<li key="summaryTransactionCount"><label>Transaction Count:</label> {statistics.transactionCount}</li>
+					<li key="summaryValue"><label>Value:</label> {statistics.value}</li>
+					<li key="summaryEarnedValue"><label>Earned Value:</label> {statistics.earnedValue}</li>
+					<li key="summaryEarnedValuePerDay"><label>Earned Value Per Day:</label> {statistics.earnedValuePerDay}</li>
+					<li key="summaryEarnedValuePerWeek"><label>Earned Value Per Week:</label> {statistics.earnedValuePerWeek}</li>
 				</ul>
 				<h2>Tokens</h2>
 				{statistics.tokens.map(function(token, index) {
 					return (
 						<div>
-							<h3>Token: {token.tokenName} ({token.tokenAddress})</h3>
+							<h3>{token.tokenName} ({token.tokenAddress})</h3>
 							<ul>
-								<li><label>First Transaction:</label> {token.firstTransactionAt}</li>
-								<li><label>Transaction Count:</label> {token.transactionCount}</li>
-								<li><label>Price:</label> {token.tokenPrice}</li>
-								<li><label>Price Updated At:</label> {token.tokenPriceUpdatedAt}</li>
-								<li><label>Count:</label> {token.tokenCount}</li>
-								<li><label>Value:</label> {token.value}</li>
-								<li><label>Earned Count:</label> {token.earnedTokenCount}</li>
-								<li><label>Earned Count Per Day:</label> {token.earnedTokenCountPerDay}</li>
-								<li><label>Earned Count Per Week:</label> {token.earnedTokenCountPerWeek}</li>
-								<li><label>Earned Value:</label> {token.earnedValue}</li>
-								<li><label>Earned Value Per Day:</label> {token.earnedTokenValuePerDay}</li>
-								<li><label>Earned Value Per Week:</label> {token.earnedTokenValuePerWeek}</li>
+								<li key="{token.tokenAddress}-firstTransactionAt"><label>First Transaction:</label> {token.firstTransactionAt}</li>
+								<li key="{token.tokenAddress}-transationCount"><label>Transaction Count:</label> {token.transactionCount}</li>
+								<li key="{token.tokenAddress}-tokenPrice"><label>Price:</label> {token.tokenPrice}</li>
+								<li key="{token.tokenAddress}-tokenPriceSource"><label>Price Source:</label> {token.tokenPriceSource}</li>
+								<li key="{token.tokenAddress}-tokenPriceUpdatedAt"><label>Price Updated At:</label> {token.tokenPriceUpdatedAt}</li>
+								<li key="{token.tokenAddress}-tokenCount"><label>Count:</label> {token.tokenCount}</li>
+								<li key="{token.tokenAddress}-value"><label>Value:</label> {token.value}</li>
+								<li key="{token.tokenAddress}-earnedTokenCount"><label>Earned Count:</label> {token.earnedTokenCount}</li>
+								<li key="{token.tokenAddress}-earnedTokenCountPerDay"><label>Earned Count Per Day:</label> {token.earnedTokenCountPerDay}</li>
+								<li key="{token.tokenAddress}-earnedTokenCountPerWeek"><label>Earned Count Per Week:</label> {token.earnedTokenCountPerWeek}</li>
+								<li key="{token.tokenAddress}-earnedValue"><label>Earned Value:</label> {token.earnedValue}</li>
+								<li key="{token.tokenAddress}-earnedValuePerDay"><label>Earned Value Per Day:</label> {token.earnedValuePerDay}</li>
+								<li key="{token.tokenAddress}-earnedValuePerWeek"><label>Earned Value Per Week:</label> {token.earnedValuePerWeek}</li>
 							</ul>
 						</div>
 					)
@@ -72,11 +75,11 @@ class WalletStatistics extends Component {
 			</div>;
 		} else {
 			console.log('render else');
-			content = <div>Welcome, please enter your wallet address</div>;
+			content = <span className="welcome">Welcome, please enter your wallet address</span>;
 		}
 
 		return (
-			<div>
+			<div className="walletStatistics">
 				{content}
 			</div>
 		)

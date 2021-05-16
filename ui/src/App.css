@@ -41,16 +41,36 @@
 	}
 }
 
+h1 {
+	margin: 0px 0px 5px 0px;
+}
+
+header {
+	background-color: #000080;
+	color: #F4F4F9;
+	padding: 9px;
+}
+
 .content {
-	bottom: 160px;
+	bottom: 140px;
 	overflow-y: scroll;
 	position: fixed;
-	top: 120px;
+	top: 90px;
 	width: 100vw;
 }
 
 footer {
+	background-color: #000080;
 	bottom: 0;
+	color: #F4F4F9;
 	position: fixed;
 	width: 100vw;
+}
+
+footer a {
+	color: lightGrey;
+}
+
+footer a:visited {
+	color: darkGrey;
 }

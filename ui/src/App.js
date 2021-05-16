@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import WalletInput from './components/wallet/WalletInput';
 import WalletStatistics from './components/wallet/WalletStatistics';
-import AdsenseWidget from './components/adsense/AdsenseWidget';
+import AdSenseWidget from './components/adsense/AdSenseWidget';
 
 function App() {
 
@@ -11,8 +11,8 @@ function App() {
 		<div className="App">
 			<header>
 				<h1>CryptoBag</h1>
+				<WalletInput />
 			</header>
-			<WalletInput />
 			<div className="content">
 				<WalletStatistics />
 			</div>
@@ -23,7 +23,7 @@ function App() {
 					<a href="https://github.com/pancakeswap/pancake-info-api" rel="noreferrer" target="_blank">Pancakeswap APIs</a>,&nbsp;
 					<a href="https://github.com" rel="noreferrer" target="_blank">GitHub</a>
 				</div>
-				<AdsenseWidget />
+				<AdSenseWidget />
 			</footer>
 		</div>
 	);

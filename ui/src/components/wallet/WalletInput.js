@@ -12,36 +12,35 @@ class WalletInput extends Component {
 		}
 
 		this.handleAddressChange = this.handleAddressChange.bind(this);
-		this.handleGoClick = this.handleGoClick.bind(this);
+		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 	}
 
 	handleAddressChange(event) {
 		this.setState({address: event.target.value});
 	}
 
-	handleGoClick(event) {
+	handleFormSubmit(event) {
+		event.preventDefault();
 		this.props.getWallet(this.state.address)
 	}
 
 	render() {
 		return (
 			<div className="walletInput">
-				<label>
-					Wallet Address:&nbsp;
-					<input
-						type="text"
-						onChange={this.handleAddressChange}
-						size="42"
-						value={this.state.address}
-						className="walletInputAddress"
-						/>
-				</label>
-				&nbsp;
-				<button
-					onClick={this.handleGoClick}
-					>
-					Go
-				</button>
+				<form onSubmit={this.handleFormSubmit}>
+					<label>
+						Wallet Address:&nbsp;
+						<input
+							type="text"
+							onChange={this.handleAddressChange}
+							size="42"
+							value={this.state.address}
+							className="walletInputAddress"
+							/>
+					</label>
+					&nbsp;
+					<button type="submit">Go</button>
+				</form>
 			</div>
 		)
 	}
