@@ -19,7 +19,7 @@ render () {
 		<AdSense.Google
 			client='ca-pub-6526798120378756'
 			slot='1686195266'
-			style={{ display: 'block' }}
+			style={{ display: 'block', height: '120px' }}
 			format='auto'
 			responsive='true'
 		/>

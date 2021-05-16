@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
+import './WalletInput.css';
 import {getWallet} from '../../store/actions/walletActions'
 
 class WalletInput extends Component {
@@ -30,14 +31,17 @@ class WalletInput extends Component {
 					<input
 						type="text"
 						onChange={this.handleAddressChange}
+						size="42"
 						value={this.state.address}
-						/>&nbsp;
-					<button
-						onClick={this.handleGoClick}
-						>
-						Go
-					</button>
+						className="walletInputAddress"
+						/>
 				</label>
+				&nbsp;
+				<button
+					onClick={this.handleGoClick}
+					>
+					Go
+				</button>
 			</div>
 		)
 	}

@@ -5,7 +5,7 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 import rootReducer from './reducers'
 
 const initalState = {
-	address: ''
+	wallet: {} 
 }
 
 const middleware = [thunk]

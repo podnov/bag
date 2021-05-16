@@ -1,9 +1,7 @@
 .body-wrap {
-	height: 100vh;
 }
 
 .App {
-	height: 100vh;
 	text-align: center;
 }
 
@@ -41,6 +39,14 @@
 	100% {
 		transform: translateY(0px);
 	}
+}
+
+.content {
+	bottom: 160px;
+	overflow-y: scroll;
+	position: fixed;
+	top: 120px;
+	width: 100vw;
 }
 
 footer {
