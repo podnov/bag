@@ -5,8 +5,10 @@ import "fmt"
 
 import "github.com/go-resty/resty/v2"
 
+const ApiKeyEnvironmentVariableName = "BSC_SCAN_API_KEY"
+
 const apiBaseUrl = "https://api.bscscan.com/api"
-const apiKey = "X5T7BC9KUVXAWP6SQHRD5Z7RXRH58RJVIX" // TODO better
+
 
 // TODO handle client invocation failures
 
@@ -19,14 +21,17 @@ func (c *BscApiClient) createRestyClient() (*resty.Client) {
 }
 
 func (c *BscApiClient) formatAccountTokenBalanceUrl(accountAddress string, tokenAddress string) (string) {
+	apiKey := getEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokenbalance&address=%s&contractaddress=%s&tag=latest&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
 }
 
 func (c *BscApiClient) formatAccountTokenTransactionsUrl(accountAddress string) (string) {
+	apiKey := getEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, apiKey)
 }
 
 func (c *BscApiClient) formatAccountTokenTransactionsForTokenUrl(accountAddress string, tokenAddress string) (string) {
+	apiKey := getEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&contractaddress=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
 }
 

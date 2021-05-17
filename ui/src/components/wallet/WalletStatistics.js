@@ -39,7 +39,7 @@ class WalletStatistics extends Component {
 				Error encountered fetching wallet data. Please verify wallet address and try again.
 			</div>;
 		} else if (isLoading) {
-			content = <Loader type="MutatingDots" />;
+			content = <Loader type="MutatingDots" height={100} width={100} />;
 		} else if (statistics) {
 			let numberFormatter = new Intl.NumberFormat();
 			let currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });

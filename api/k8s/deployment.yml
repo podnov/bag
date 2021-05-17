@@ -20,6 +20,12 @@ spec:
       containers:
       - name: bag-api-v1
         image: gcr.io/PROJECT_ID/IMAGE:TAG
+        env:
+        - name: BSC_SCAN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bag-api
+              key: BSC_SCAN_API_KEY
         ports:
         - containerPort: 8080
         resources:
