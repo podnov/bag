@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: bag-api
+  name: bag-ui
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: crypto-bag-api
+    kubernetes.io/ingress.global-static-ip-name: crypto-bag
 spec:
   rules:
-  - host: "api.cryptobag.podnov.com"
+  - host: "cryptobag.podnov.com"
     http:
       paths:
       - pathType: Prefix
-        path: "/bag/api/v1/*"
+        path: "/*"
         backend:
-          serviceName: bag-api-v1
+          serviceName: bag-ui-v1
           servicePort: 80
 
