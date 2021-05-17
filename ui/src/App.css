@@ -49,21 +49,23 @@ h2 {
 
 header {
 	background-color: #000080;
+	border-bottom: solid 2px black;
 	color: #F4F4F9;
 	padding: 0px 0px 9px 0px;
 }
 
 .content {
-	bottom: 145px;
+	bottom: 147px;
 	overflow-y: scroll;
 	padding: 9px 0px 0px 0px;
 	position: fixed;
-	top: 80px;
+	top: 110px;
 	width: 100vw;
 }
 
 footer {
 	background-color: #000080;
+	border-top: solid 2px black;
 	bottom: 0;
 	color: #F4F4F9;
 	padding: 5px 0px 0px 0px;
@@ -77,4 +79,8 @@ footer a {
 
 footer a:visited {
 	color: darkGrey;
+}
+
+.modalButtons {
+	text-align: right;
 }
