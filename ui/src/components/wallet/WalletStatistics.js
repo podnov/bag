@@ -63,6 +63,10 @@ class WalletStatistics extends Component {
 				return result;
 			};
 
+			statistics.tokens.sort(function(first, second) {
+				return (first.tokenName + first.tokenAddress).toLowerCase().localeCompare(second.tokenName + second.tokenAddress);
+			});
+
 			content = <div>
 				<h2>Summary</h2>
 				<ul>
