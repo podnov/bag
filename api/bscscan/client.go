@@ -9,7 +9,6 @@ const ApiKeyEnvironmentVariableName = "BSC_SCAN_API_KEY"
 
 const apiBaseUrl = "https://api.bscscan.com/api"
 
-
 // TODO handle client invocation failures
 
 type BscApiClient struct {
