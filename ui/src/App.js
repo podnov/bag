@@ -1,6 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
+
 import Modal from 'react-modal';
+import { Helmet } from 'react-helmet'
+
 import './App.css';
 import WalletInput from './components/wallet/WalletInput';
 import WalletStatistics from './components/wallet/WalletStatistics';
@@ -32,6 +35,9 @@ function App() {
 
 	return (
 		<div className="App">
+			<Helmet>
+				<title>CryptoBag</title>
+			</Helmet>
 			<header>
 				<h1>CryptoBag</h1>
 				<div><button onClick={openModal}>Show Disclaimers</button></div>
@@ -48,6 +54,7 @@ function App() {
 					<a href="https://github.com" rel="noreferrer" target="_blank">GitHub</a>
 				</div>
 				<AdSenseWidget />
+				© <a href="mailto:cryptobag.podnov@gmailcom">CryptoBag</a> 2021. All Rights Reserved
 			</footer>
 
 			<Modal
