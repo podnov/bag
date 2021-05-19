@@ -6,7 +6,7 @@ import "testing"
 
 import "github.com/podnov/bag/api/bscscan"
 
-func Test_calculateEarnedRawTokens(t *testing.T) {
+func Test_calculateAccruedRawTokens(t *testing.T) {
 	givenAccountAddress := "given-account-address"
 	givenSwapAddress := "given-swap-address"
 	givenBalance := big.NewInt(42000)
@@ -29,7 +29,7 @@ func Test_calculateEarnedRawTokens(t *testing.T) {
 		},
 	}
 
-	actual, err := calculateEarnedRawTokens(givenAccountAddress, givenBalance, givenTransactions)
+	actual, err := calculateAccruedRawTokens(givenAccountAddress, givenBalance, givenTransactions)
 
 	if err != nil {
 		t.Errorf("Got %s; want nil", err)

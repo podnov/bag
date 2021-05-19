@@ -17,7 +17,7 @@ type DataFetcher struct {
 	pcsv2Client *pcsv2.PancakeswapApiClient
 }
 
-func calculateEarnedRawTokens(accountAddress string, balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
+func calculateAccruedRawTokens(accountAddress string, balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
 	result := new(big.Int).Set(balance)
 
 	for _, transaction := range transactions {
@@ -56,7 +56,7 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 		return AccountTokenStatistics{}, err
 	}
 
-	rawEarned, err := calculateEarnedRawTokens(accountAddress, rawBalance, transactions)
+	rawAccrued, err := calculateAccruedRawTokens(accountAddress, rawBalance, transactions)
 
 	if err != nil {
 		return AccountTokenStatistics{}, err
@@ -72,30 +72,30 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 	transactionCount := len(transactions)
 
 	bigTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawBalance), divisor)
-	bigEarnedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawEarned), divisor)
+	bigAccruedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawAccrued), divisor)
 
 	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionTime).Hours() / 24)
 	tokenCount, _ := bigTokenCount.Float64()
 	value := (tokenCount * price)
-	earnedTokenCount, _ := bigEarnedTokenCount.Float64()
-	earnedTokenCountPerDay := (earnedTokenCount / daysSinceFirstTransaction)
-	earnedTokenCountPerWeek := (earnedTokenCountPerDay * 7)
-	earnedValue := (earnedTokenCount * price)
-	earnedValuePerDay := (earnedTokenCountPerDay * price)
-	earnedValuePerWeek := (earnedValuePerDay * 7)
-	earnedRatio := (earnedTokenCount / tokenCount)
+	accruedTokenCount, _ := bigAccruedTokenCount.Float64()
+	accruedTokenCountPerDay := (accruedTokenCount / daysSinceFirstTransaction)
+	accruedTokenCountPerWeek := (accruedTokenCountPerDay * 7)
+	accruedValue := (accruedTokenCount * price)
+	accruedValuePerDay := (accruedTokenCountPerDay * price)
+	accruedValuePerWeek := (accruedValuePerDay * 7)
+	accruedRatio := (accruedTokenCount / tokenCount)
 
 	return AccountTokenStatistics{
 		AccountAddress: accountAddress,
+		AccruedTokenCount: accruedTokenCount,
+		AccruedTokenCountPerDay: accruedTokenCountPerDay,
+		AccruedTokenCountPerWeek: accruedTokenCountPerWeek,
+		AccruedValue: accruedValue,
+		AccruedValuePerDay: accruedValuePerDay,
+		AccruedValuePerWeek: accruedValuePerWeek,
+		AccruedValueRatio: accruedRatio,
 		DaysSinceFirstTransaction: daysSinceFirstTransaction,
 		Decimals: decimals,
-		EarnedTokenCount: earnedTokenCount,
-		EarnedTokenCountPerDay: earnedTokenCountPerDay,
-		EarnedTokenCountPerWeek: earnedTokenCountPerWeek,
-		EarnedValue: earnedValue,
-		EarnedValuePerDay: earnedValuePerDay,
-		EarnedValuePerWeek: earnedValuePerWeek,
-		EarnedValueRatio: earnedRatio,
 		FirstTransactionAt: firstTransactionTime,
 		TokenAddress: tokenAddress,
 		TokenCount: tokenCount,
@@ -150,7 +150,7 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
 
 	tokenIndex := 0
-	earnedValue := float64(0)
+	accruedValue := float64(0)
 	var firstTransactionAt time.Time
 	transactionCount := 0
 	value := float64(0)
@@ -162,7 +162,7 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 			return AccountStatistics{}, err
 		}
 
-		earnedValue += tokenStatistics.EarnedValue
+		accruedValue += tokenStatistics.AccruedValue
 		transactionCount += tokenStatistics.TransactionCount
 		value += tokenStatistics.Value
 
@@ -176,17 +176,17 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 		tokenIndex++
 	}
 
-	earnedValueRatio := (earnedValue / value)
+	accruedValueRatio := (accruedValue / value)
 	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionAt).Hours() / 24)
-	earnedValuePerDay := (earnedValue / daysSinceFirstTransaction)
-	earnedValuePerWeek := (earnedValuePerDay * 7)
+	accruedValuePerDay := (accruedValue / daysSinceFirstTransaction)
+	accruedValuePerWeek := (accruedValuePerDay * 7)
 
 	return AccountStatistics{
 		AccountAddress: accountAddress,
-		EarnedValue: earnedValue,
-		EarnedValuePerDay: earnedValuePerDay,
-		EarnedValuePerWeek: earnedValuePerWeek,
-		EarnedValueRatio: earnedValueRatio,
+		AccruedValue: accruedValue,
+		AccruedValuePerDay: accruedValuePerDay,
+		AccruedValuePerWeek: accruedValuePerWeek,
+		AccruedValueRatio: accruedValueRatio,
 		FirstTransactionAt: firstTransactionAt,
 		Tokens: tokens,
 		TransactionCount: transactionCount,

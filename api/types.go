@@ -9,10 +9,10 @@ const (
 
 type AccountStatistics struct {
 	AccountAddress string `json:"accountAddress"`
-	EarnedValue float64 `json:"earnedValue"`
-	EarnedValuePerDay float64 `json:"earnedValuePerDay"`
-	EarnedValuePerWeek float64 `json:"earnedValuePerWeek"`
-	EarnedValueRatio float64 `json:"earnedValueRatio"`
+	AccruedValue float64 `json:"accruedValue"`
+	AccruedValuePerDay float64 `json:"accruedValuePerDay"`
+	AccruedValuePerWeek float64 `json:"accruedValuePerWeek"`
+	AccruedValueRatio float64 `json:"accruedValueRatio"`
 	FirstTransactionAt time.Time `json:"firstTransactionAt"`
 	Tokens []AccountTokenStatistics `json:"tokens"`
 	TransactionCount int `json:"transactionCount"`
@@ -21,15 +21,15 @@ type AccountStatistics struct {
 
 type AccountTokenStatistics struct {
 	AccountAddress string `json:"accountAddress"`
+	AccruedTokenCount float64 `json:"accruedTokenCount"`
+	AccruedTokenCountPerDay float64 `json:"accruedTokenCountPerDay"`
+	AccruedTokenCountPerWeek float64 `json:"accruedTokenCountPerWeek"`
+	AccruedValue float64 `json:"accruedValue"`
+	AccruedValuePerDay float64 `json:"accruedValuePerDay"`
+	AccruedValuePerWeek float64 `json:"accruedValuePerWeek"`
+	AccruedValueRatio float64 `json:"accruedValueRatio"`
 	DaysSinceFirstTransaction float64 `json:"daysSinceFirstTransaction"`
 	Decimals int `json:"decimals"`
-	EarnedTokenCount float64 `json:"earnedTokenCount"`
-	EarnedTokenCountPerDay float64 `json:"earnedTokenCountPerDay"`
-	EarnedTokenCountPerWeek float64 `json:"earnedTokenCountPerWeek"`
-	EarnedValue float64 `json:"earnedValue"`
-	EarnedValuePerDay float64 `json:"earnedValuePerDay"`
-	EarnedValuePerWeek float64 `json:"earnedValuePerWeek"`
-	EarnedValueRatio float64 `json:"earnedValueRatio"`
 	FirstTransactionAt time.Time `json:"firstTransactionAt"`
 	TokenAddress string `json:"tokenAddress"`
 	TokenCount float64 `json:"tokenCount"`
