@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: bag-api-v1
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: bag-api-v1

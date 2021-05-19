@@ -73,6 +73,8 @@ function App() {
 					<li>Information provided on this website is provided on an "as is" basis without warranty of any kind, either express or implied</li>
 					<li>All monetary figures are shown in USD and are not intended to be used for any official purposes (i.e. taxes).</li>
 					<li>All prices are provided by an external provider (PancakeSwap v1 or v2 at this time)</li>
+					<li>If you have over 10,000 transactions on your account, this site is NOT for you at this time due to API response size limits</li>
+					<li>Earned tokens and values calculations are likely to be skewed by recent transaction (&lt; 1hr old) due to transaction API lag</li>
 					<li>Earned tokens are simplified as a calculation similar to (earned = current - bought + sold) and may not be entirely accurate</li>
 					<li>Earned tokens and values over time (per day or per week) are simplified calculations averaging earned amount over the time since your first transaction for that token</li> 
 					<li>By using this website you agree that the creator(s) cannot be held liable in respect to actions taken or not taken based on information contained on or missing from this website.</li>

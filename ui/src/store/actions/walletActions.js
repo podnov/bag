@@ -7,7 +7,9 @@ import {
 import axios from 'axios'
 
 const apiBaseUrl = 'bag/api/v1'
-let apiHost = (process.env.NODE_ENV == 'production' ? 'http://api.cryptobag.podnov.com' : '')
+const productionApiHost = 'http://api.cryptobag.podnov.com';
+
+let apiHost = (process.env.NODE_ENV === 'production' ? productionApiHost : '/')
 
 export const getWallet = (address) => async dispatch => {
 	dispatch({

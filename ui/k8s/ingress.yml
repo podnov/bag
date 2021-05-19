@@ -4,6 +4,8 @@ metadata:
   name: bag-ui
   annotations:
     kubernetes.io/ingress.global-static-ip-name: crypto-bag
+    networking.gke.io/managed-certificates: bag
+    kubernetes.io/ingress.class: "gce"
 spec:
   rules:
   - host: "cryptobag.podnov.com"
