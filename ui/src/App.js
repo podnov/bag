@@ -72,7 +72,7 @@ function App() {
 					<li>The materials and information on this website are intended for informational purposes only. Any information on this site may be out of date.</li>
 					<li>Information provided on this website is provided on an "as is" basis without warranty of any kind, either express or implied</li>
 					<li>All monetary figures are shown in USD and are not intended to be used for any official purposes (i.e. taxes).</li>
-					<li>All prices are provided by an external provider (PancakeSwap v1 or v2 at this time)</li>
+					<li>All prices are provided by an external provider (PancakeSwap v1 or v2 at this time), and these are often delayed</li>
 					<li>If you have over 10,000 transactions on your account, this site is NOT for you at this time due to API response size limits</li>
 					<li>Accrued tokens and values refer to those tokens accrued through something like transaction tax-based reflection to holders</li> 
 					<li>Accrued tokens and values calculations are likely to be skewed by recent transaction (&lt; 1hr old) due to transaction API lag</li>
