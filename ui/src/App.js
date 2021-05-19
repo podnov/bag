@@ -54,7 +54,7 @@ function App() {
 					<a href="https://github.com" rel="noreferrer" target="_blank">GitHub</a>
 				</div>
 				<AdSenseWidget />
-				© <a href="mailto:cryptobag.podnov@gmail.com" rel="noreferrer" target="_blank">CryptoBag</a> 2021. All Rights Reserved
+				© <a href="mailto:cryptobag.podnov@gmail.com" rel="noreferrer" target="_blank">CryptoBag</a> 2021. All Rights Reserved. Tip Jar: 0x5a6d55a598cba3a9fdafd0876c9ca02238c03e38
 			</footer>
 
 			<Modal
