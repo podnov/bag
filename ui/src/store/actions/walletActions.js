@@ -7,7 +7,7 @@ import {
 import axios from 'axios'
 
 const apiBaseUrl = 'bag/api/v1'
-const productionApiHost = 'http://api.cryptobag.podnov.com';
+let productionApiHost = `${window.location.protocol}//api.cryptobag.podnov.com`;
 
 let apiHost = (process.env.NODE_ENV === 'production' ? productionApiHost : window.location.href)
 
