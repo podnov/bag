@@ -74,9 +74,9 @@ class WalletStatistics extends Component {
 					<li key="summaryFirstTransactionAt"><label>First Transaction:</label> {new Date(statistics.firstTransactionAt).toLocaleString()}</li>
 					<li key="summaryTransactionCount"><label>Transaction Count:</label> {numberFormatter.format(statistics.transactionCount)}</li>
 					<li key="summaryValue"><label>Value:</label> {currencyFormatter.format(statistics.value)}</li>
-					<li key="summaryAccruedValue"><label>Accrued Value:</label> {currencyFormatter.format(statistics.accruedValue)}</li>
-					<li key="summaryAccruedValuePerDay"><label>Accrued Value Per Day:</label> {currencyFormatter.format(statistics.accruedValuePerDay)}</li>
-					<li key="summaryAccruedValuePerWeek"><label>Accrued Value Per Week:</label> {currencyFormatter.format(statistics.accruedValuePerWeek)}</li>
+					<li key="summaryAccruedValue"><label>Accrued Value:</label> {currencyFormatter.format(statistics.accruedValue)},&nbsp;
+						<label>Per Day:</label> {currencyFormatter.format(statistics.accruedValuePerDay)},&nbsp;
+						<label>Per Week:</label> {currencyFormatter.format(statistics.accruedValuePerWeek)}</li>
 				</ul>
 				<h2>Tokens</h2>
 				{statistics.tokens.map(function(token, index) {
@@ -87,16 +87,16 @@ class WalletStatistics extends Component {
 								<li key="{token.tokenAddress}-firstTransactionAt"><label>First Transaction:</label> {new Date(token.firstTransactionAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-transationCount"><label>Transaction Count:</label> {numberFormatter.format(token.transactionCount)}</li>
 								<li key="{token.tokenAddress}-tokenPrice"><label>Price:</label> {token.tokenPrice}</li>
-								<li key="{token.tokenAddress}-tokenPriceSource"><label>Price Source:</label> {convertPriceSource(token.tokenPriceSource)}</li>
-								<li key="{token.tokenAddress}-tokenPriceUpdatedAt"><label>Price Updated At:</label> {new Date(token.tokenPriceUpdatedAt).toLocaleString()}</li>
+								<li key="{token.tokenAddress}-tokenPriceSource"><label>Price Source:</label> {convertPriceSource(token.tokenPriceSource)},&nbsp;
+									<label>Updated At:</label> {new Date(token.tokenPriceUpdatedAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-tokenCount"><label>Count:</label> {numberFormatter.format(token.tokenCount)}</li>
 								<li key="{token.tokenAddress}-value"><label>Value:</label> {currencyFormatter.format(token.value)}</li>
-								<li key="{token.tokenAddress}-accruedTokenCount"><label>Accrued Count:</label> {numberFormatter.format(token.accruedTokenCount)}</li>
-								<li key="{token.tokenAddress}-accruedTokenCountPerDay"><label>Accrued Count Per Day:</label> {numberFormatter.format(token.accruedTokenCountPerDay)}</li>
-								<li key="{token.tokenAddress}-accruedTokenCountPerWeek"><label>Accrued Count Per Week:</label> {numberFormatter.format(token.accruedTokenCountPerWeek)}</li>
-								<li key="{token.tokenAddress}-accruedValue"><label>Accrued Value:</label> {currencyFormatter.format(token.accruedValue)}</li>
-								<li key="{token.tokenAddress}-accruedValuePerDay"><label>Accrued Value Per Day:</label> {currencyFormatter.format(token.accruedValuePerDay)}</li>
-								<li key="{token.tokenAddress}-accruedValuePerWeek"><label>Accrued Value Per Week:</label> {currencyFormatter.format(token.accruedValuePerWeek)}</li>
+								<li key="{token.tokenAddress}-accruedTokenCount"><label>Accrued Count:</label> {numberFormatter.format(token.accruedTokenCount)},&nbsp;
+									<label>Per Day:</label> {numberFormatter.format(token.accruedTokenCountPerDay)},&nbsp;
+									<label>Per Week:</label> {numberFormatter.format(token.accruedTokenCountPerWeek)}</li>
+								<li key="{token.tokenAddress}-accruedValue"><label>Accrued Value:</label> {currencyFormatter.format(token.accruedValue)},&nbsp;
+									<label>Per Day:</label> {currencyFormatter.format(token.accruedValuePerDay)},&nbsp;
+									<label>Per Week:</label> {currencyFormatter.format(token.accruedValuePerWeek)}</li>
 							</ul>
 						</div>
 					)
