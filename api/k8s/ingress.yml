@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: bag-api
@@ -14,6 +14,8 @@ spec:
       - pathType: Prefix
         path: "/bag/api/v1/*"
         backend:
-          serviceName: bag-api-v1
-          servicePort: 80
+          service:
+            name: bag-api-v1
+            port:
+              number: 80
 
