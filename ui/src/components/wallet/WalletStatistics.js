@@ -82,7 +82,14 @@ class WalletStatistics extends Component {
 				{statistics.tokens.map(function(token, index) {
 					return (
 						<div>
-							<h3>{token.tokenName} ({token.tokenAddress})</h3>
+							<h3 className="tokenInfo">
+	{token.coinMarketCapId > 0 && 
+								<img
+									src={"https://s2.coinmarketcap.com/static/img/coins/32x32/" + token.coinMarketCapId + ".png"}
+									alt={token.tokenName + " logo"} />
+	}
+								{token.tokenName}
+								({token.tokenAddress})</h3>
 							<ul>
 								<li key="{token.tokenAddress}-firstTransactionAt"><label>First Transaction:</label> {new Date(token.firstTransactionAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-transationCount"><label>Transaction Count:</label> {numberFormatter.format(token.transactionCount)}</li>

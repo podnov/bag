@@ -1,3 +1,14 @@
+.tokenInfo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.tokenInfo img {
+	padding-right:5px;
+}
+
 .walletStatistics li {
 	list-style: none;
 }
