@@ -22,7 +22,7 @@ function App() {
 			bottom : 'auto',
 			marginRight : '-50%',
 			transform : 'translate(-50%, -50%)',
-			maxHeight: '100vh'
+			maxHeight: '80vh'
 		}
 	};
 
