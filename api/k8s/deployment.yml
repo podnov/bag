@@ -26,6 +26,11 @@ spec:
             secretKeyRef:
               name: bag-api
               key: BSC_SCAN_API_KEY
+        - name: COIN_MARKET_CAP_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bag-api
+              key: COIN_MARKET_CAP_API_KEY
         ports:
         - containerPort: 8080
         resources:

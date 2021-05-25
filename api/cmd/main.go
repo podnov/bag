@@ -2,25 +2,36 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/podnov/bag/api/controllers"
+	"github.com/podnov/bag/api/coinmarketcap"
 )
 
 var urlSchemePattern = regexp.MustCompile(`^(?P<Scheme>https?)://.+$`)
 
 func main() {
+	cryptocurrencyMapStore, err := coinmarketcap.NewCryptocurrencyMapStore()
+
+	if err != nil {
+		log.Fatalf("Could not start cmc cryptocurrency map store: %v", err)
+	}
+
 	r := gin.Default()
 
 	corsConfig := createCorsConfig()
 	r.Use(corsConfig)
 
 	r.GET("/", controllers.CheckRoot)
-	r.GET("/bag/api/v1/accounts/:accountId", controllers.GetAccount) 
 	r.GET("/bag/api/v1/health/liveness", controllers.CheckLiveness)
 	r.GET("/bag/api/v1/health/readiness", controllers.CheckReadiness)
+
+	r.GET("/bag/api/v1/accounts/:accountId", func(c *gin.Context) {
+		controllers.GetAccount(c, cryptocurrencyMapStore)
+	})
 
 	r.Run()
 }

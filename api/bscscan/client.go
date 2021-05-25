@@ -1,9 +1,12 @@
 package bscscan
 
-import "encoding/json"
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
 
-import "github.com/go-resty/resty/v2"
+	"github.com/go-resty/resty/v2"
+	"github.com/podnov/bag/api/utils"
+)
 
 const ApiKeyEnvironmentVariableName = "BSC_SCAN_API_KEY"
 
@@ -20,17 +23,17 @@ func (c *BscApiClient) createRestyClient() (*resty.Client) {
 }
 
 func (c *BscApiClient) formatAccountTokenBalanceUrl(accountAddress string, tokenAddress string) (string) {
-	apiKey := getEnv(ApiKeyEnvironmentVariableName)
+	apiKey := utils.GetEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokenbalance&address=%s&contractaddress=%s&tag=latest&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
 }
 
 func (c *BscApiClient) formatAccountTokenTransactionsUrl(accountAddress string) (string) {
-	apiKey := getEnv(ApiKeyEnvironmentVariableName)
+	apiKey := utils.GetEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, apiKey)
 }
 
 func (c *BscApiClient) formatAccountTokenTransactionsForTokenUrl(accountAddress string, tokenAddress string) (string) {
-	apiKey := getEnv(ApiKeyEnvironmentVariableName)
+	apiKey := utils.GetEnv(ApiKeyEnvironmentVariableName)
 	return fmt.Sprintf("%s?module=account&action=tokentx&address=%s&contractaddress=%s&sort=asc&apikey=%s", apiBaseUrl, accountAddress, tokenAddress, apiKey)
 }
 

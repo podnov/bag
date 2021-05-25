@@ -1,7 +1,9 @@
 package bscscan
 
-import "os"
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func Test_formatAccountTokenBalanceUrl(t *testing.T) {
 	givenAccountAddress := "given-account-address"

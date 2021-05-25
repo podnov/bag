@@ -28,6 +28,7 @@ type AccountTokenStatistics struct {
 	AccruedValuePerDay float64 `json:"accruedValuePerDay"`
 	AccruedValuePerWeek float64 `json:"accruedValuePerWeek"`
 	AccruedValueRatio float64 `json:"accruedValueRatio"`
+	CoinMarketCapId int `json:"coinMarketCapId"`
 	DaysSinceFirstTransaction float64 `json:"daysSinceFirstTransaction"`
 	Decimals int `json:"decimals"`
 	FirstTransactionAt time.Time `json:"firstTransactionAt"`

@@ -1,18 +1,22 @@
 package api
 
-import "errors"
-import "fmt"
-import "math"
-import "math/big"
-import "strings"
-import "time"
+import (
+	"errors"
+	"fmt"
+	"math"
+	"math/big"
+	"strings"
+	"time"
 
-import "github.com/podnov/bag/api/bscscan"
-import pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
-import pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
+	"github.com/podnov/bag/api/bscscan"
+	"github.com/podnov/bag/api/coinmarketcap"
+	pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
+	pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
+)
 
 type DataFetcher struct {
 	bscClient *bscscan.BscApiClient
+	cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore
 	pcsv1Client *pcsv1.PancakeswapApiClient
 	pcsv2Client *pcsv2.PancakeswapApiClient
 }
@@ -64,6 +68,7 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 
 	firstTransaction := determineFirstTransaction(transactions)
 
+	coinMarketCapId := df.cryptocurrencyMapStore.GetEntry(firstTransaction.TokenSymbol).Id
 	firstTransactionTime := time.Unix(firstTransaction.TimeStamp, 0)
 	tokenName := firstTransaction.TokenName
 	decimals := firstTransaction.TokenDecimal
@@ -94,6 +99,7 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 		AccruedValuePerDay: accruedValuePerDay,
 		AccruedValuePerWeek: accruedValuePerWeek,
 		AccruedValueRatio: accruedRatio,
+		CoinMarketCapId: coinMarketCapId,
 		DaysSinceFirstTransaction: daysSinceFirstTransaction,
 		Decimals: decimals,
 		FirstTransactionAt: firstTransactionTime,
@@ -232,9 +238,14 @@ func (df *DataFetcher) getTokenPrice(tokenAddress string) (float64, int64, strin
 	return price, priceUpdatedAt, source, nil
 }
 
-func NewDataFetcher(bscClient *bscscan.BscApiClient, pcsv1Client *pcsv1.PancakeswapApiClient, pcsv2Client *pcsv2.PancakeswapApiClient) (DataFetcher) {
+func NewDataFetcher(bscClient *bscscan.BscApiClient,
+		cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore,
+		pcsv1Client *pcsv1.PancakeswapApiClient,
+		pcsv2Client *pcsv2.PancakeswapApiClient) (DataFetcher) {
+
 	return DataFetcher{
 		bscClient: bscClient,
+		cryptocurrencyMapStore: cryptocurrencyMapStore,
 		pcsv1Client: pcsv1Client,
 		pcsv2Client: pcsv2Client,
 	}

@@ -1,9 +1,9 @@
-package bscscan
+package utils
 
 import "fmt"
 import "os"
 
-func getEnv(key string) (string) {
+func GetEnv(key string) (string) {
 	result := os.Getenv(key)
 
 	fmt.Printf("Environment variable [%s] resolved to [%s]\n", key, result)
