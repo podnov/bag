@@ -89,8 +89,9 @@ class WalletStatistics extends Component {
 									alt={token.tokenName + " logo"} />
 	}
 								{token.tokenName}
-								({token.tokenAddress})</h3>
+							</h3>
 							<ul>
+								<li key="{token.tokenAddress}-address"><label>Address:</label> {token.tokenAddress}</li>
 								<li key="{token.tokenAddress}-firstTransactionAt"><label>First Transaction:</label> {new Date(token.firstTransactionAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-transationCount"><label>Transaction Count:</label> {numberFormatter.format(token.transactionCount)}</li>
 								<li key="{token.tokenAddress}-tokenPrice"><label>Price:</label> {token.tokenPrice}</li>
