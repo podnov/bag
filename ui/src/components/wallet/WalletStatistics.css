@@ -6,7 +6,9 @@
 }
 
 .tokenInfo img {
+	height: 32px;
 	padding-right:5px;
+	width: 32px;
 }
 
 .walletStatistics li {

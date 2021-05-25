@@ -74,8 +74,8 @@ class WalletStatistics extends Component {
 					<li key="summaryFirstTransactionAt"><label>First Transaction:</label> {new Date(statistics.firstTransactionAt).toLocaleString()}</li>
 					<li key="summaryTransactionCount"><label>Transaction Count:</label> {numberFormatter.format(statistics.transactionCount)}</li>
 					<li key="summaryValue"><label>Value:</label> {currencyFormatter.format(statistics.value)}</li>
-					<li key="summaryAccruedValue"><label>Accrued Value:</label> {currencyFormatter.format(statistics.accruedValue)},&nbsp;
-						<label>Per Day:</label> {currencyFormatter.format(statistics.accruedValuePerDay)},&nbsp;
+					<li key="summaryAccruedValue"><label>Accrued Value:</label> {currencyFormatter.format(statistics.accruedValue)}&nbsp;|&nbsp;
+						<label>Per Day:</label> {currencyFormatter.format(statistics.accruedValuePerDay)}&nbsp;|&nbsp;
 						<label>Per Week:</label> {currencyFormatter.format(statistics.accruedValuePerWeek)}</li>
 				</ul>
 				<h2>Tokens</h2>
@@ -85,7 +85,7 @@ class WalletStatistics extends Component {
 							<h3 className="tokenInfo">
 	{token.coinMarketCapId > 0 && 
 								<img
-									src={"https://s2.coinmarketcap.com/static/img/coins/32x32/" + token.coinMarketCapId + ".png"}
+									src={"https://s2.coinmarketcap.com/static/img/coins/128x128/" + token.coinMarketCapId + ".png"}
 									alt={token.tokenName + " logo"} />
 	}
 								{token.tokenName}
@@ -98,11 +98,11 @@ class WalletStatistics extends Component {
 									<label>Updated At:</label> {new Date(token.tokenPriceUpdatedAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-tokenCount"><label>Count:</label> {numberFormatter.format(token.tokenCount)}</li>
 								<li key="{token.tokenAddress}-value"><label>Value:</label> {currencyFormatter.format(token.value)}</li>
-								<li key="{token.tokenAddress}-accruedTokenCount"><label>Accrued Count:</label> {numberFormatter.format(token.accruedTokenCount)},&nbsp;
-									<label>Per Day:</label> {numberFormatter.format(token.accruedTokenCountPerDay)},&nbsp;
+								<li key="{token.tokenAddress}-accruedTokenCount"><label>Accrued Count:</label> {numberFormatter.format(token.accruedTokenCount)}&nbsp;|&nbsp;
+									<label>Per Day:</label> {numberFormatter.format(token.accruedTokenCountPerDay)}&nbsp;|&nbsp;
 									<label>Per Week:</label> {numberFormatter.format(token.accruedTokenCountPerWeek)}</li>
-								<li key="{token.tokenAddress}-accruedValue"><label>Accrued Value:</label> {currencyFormatter.format(token.accruedValue)},&nbsp;
-									<label>Per Day:</label> {currencyFormatter.format(token.accruedValuePerDay)},&nbsp;
+								<li key="{token.tokenAddress}-accruedValue"><label>Accrued Value:</label> {currencyFormatter.format(token.accruedValue)}&nbsp;|&nbsp;
+									<label>Per Day:</label> {currencyFormatter.format(token.accruedValuePerDay)}&nbsp;|&nbsp;
 									<label>Per Week:</label> {currencyFormatter.format(token.accruedValuePerWeek)}</li>
 							</ul>
 						</div>
