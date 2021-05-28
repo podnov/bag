@@ -38,6 +38,7 @@ function App() {
 		<div className="App">
 			<Helmet>
 				<title>CryptoBag</title>
+				<script data-ad-client="ca-pub-6526798120378756" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 			</Helmet>
 			<header>
 				<h1>CryptoBag</h1>
