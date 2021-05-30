@@ -7,13 +7,18 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
-	"github.com/podnov/bag/api/controllers"
+
+	"github.com/shopspring/decimal"
+
 	"github.com/podnov/bag/api/coinmarketcap"
+	"github.com/podnov/bag/api/controllers"
 )
 
 var urlSchemePattern = regexp.MustCompile(`^(?P<Scheme>https?)://.+$`)
 
 func main() {
+	decimal.MarshalJSONWithoutQuotes = true
+
 	cryptocurrencyMapStore, err := coinmarketcap.NewCryptocurrencyMapStore()
 
 	if err != nil {
@@ -36,7 +41,7 @@ func main() {
 	r.Run()
 }
 
-func createCorsConfig() (gin.HandlerFunc) {
+func createCorsConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var scheme string
 
@@ -63,7 +68,7 @@ func createCorsConfig() (gin.HandlerFunc) {
 	}
 }
 
-func extractUrlScheme(url string) (string) {
+func extractUrlScheme(url string) string {
 	matches := urlSchemePattern.FindStringSubmatch(url)
-	return  matches[1]
+	return matches[1]
 }

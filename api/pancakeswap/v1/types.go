@@ -1,5 +1,9 @@
 package v1
 
+import (
+	"github.com/shopspring/decimal"
+)
+
 type TokenApiResult struct {
 	UpdatedAt int64 `json:"updated_at"`
 	Data TokenDataApiResult `json:"data"`
@@ -8,7 +12,7 @@ type TokenApiResult struct {
 type TokenDataApiResult struct {
 	Name string `json:"name"`
 	Symbol string `json:"symbol"`
-	Price float64 `json:"price,string"`
-	PriceBNB float64 `json:"price_BNB,string"`
+	Price decimal.Decimal `json:"price,string"`
+	PriceBNB decimal.Decimal `json:"price_BNB,string"`
 }
 

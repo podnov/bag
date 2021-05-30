@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,6 @@ import (
 	pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
 	pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
 )
-var oneHundred = big.NewFloat(float64(100))
 
 func CheckLiveness(c *gin.Context) {
 	c.Status(http.StatusOK)
@@ -27,7 +25,7 @@ func CheckRoot(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func createDataFetcher(cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore) (api.DataFetcher) {
+func createDataFetcher(cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore) api.DataFetcher {
 	bscClient := &bscscan.BscApiClient{}
 	pcsv1Client := &pcsv1.PancakeswapApiClient{}
 	pcsv2Client := &pcsv2.PancakeswapApiClient{}
@@ -57,7 +55,5 @@ func GetAccount(c *gin.Context, cryptocurrencyMapStore *coinmarketcap.Cryptocurr
 		// TODO better
 	}
 
-
 	c.JSON(responseStatus, responseBody)
 }
-

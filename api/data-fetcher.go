@@ -3,10 +3,11 @@ package api
 import (
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"strings"
 	"time"
+
+	"github.com/shopspring/decimal"
 
 	"github.com/podnov/bag/api/bscscan"
 	"github.com/podnov/bag/api/coinmarketcap"
@@ -14,11 +15,16 @@ import (
 	pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
 )
 
+var daysPerWeek = decimal.NewFromInt(7)
+var hoursPerDay = decimal.NewFromInt(24)
+var millisPerHour = decimal.NewFromInt(3600000)
+var ten = decimal.NewFromInt(10)
+
 type DataFetcher struct {
-	bscClient *bscscan.BscApiClient
+	bscClient              *bscscan.BscApiClient
 	cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore
-	pcsv1Client *pcsv1.PancakeswapApiClient
-	pcsv2Client *pcsv2.PancakeswapApiClient
+	pcsv1Client            *pcsv1.PancakeswapApiClient
+	pcsv2Client            *pcsv2.PancakeswapApiClient
 }
 
 func calculateAccruedRawTokens(accountAddress string, balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
@@ -39,6 +45,13 @@ func calculateAccruedRawTokens(accountAddress string, balance *big.Int, transact
 	}
 
 	return result, nil
+}
+
+func calculateDaysPriorToNow(firstTransactionTime time.Time) decimal.Decimal {
+	millis := time.Now().Sub(firstTransactionTime).Milliseconds()
+	return decimal.NewFromInt(millis).
+		Div(millisPerHour).
+		Div(hoursPerDay)
 }
 
 func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, tokenAddress string, transactions []bscscan.TransactionApiResult) (AccountTokenStatistics, error) {
@@ -71,50 +84,53 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 	coinMarketCapId := df.cryptocurrencyMapStore.GetEntry(firstTransaction.TokenSymbol).Id
 	firstTransactionTime := time.Unix(firstTransaction.TimeStamp, 0)
 	tokenName := firstTransaction.TokenName
-	decimals := firstTransaction.TokenDecimal
-	divisor := big.NewFloat(math.Pow10(decimals))
-	priceUpdatedAt := time.Unix(0, priceUpdatedAtUnix * int64(time.Millisecond))
+	priceUpdatedAt := time.Unix(0, priceUpdatedAtUnix*int64(time.Millisecond))
 	transactionCount := len(transactions)
 
-	bigTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawBalance), divisor)
-	bigAccruedTokenCount := new(big.Float).Quo(new(big.Float).SetInt(rawAccrued), divisor)
+	decimals := firstTransaction.TokenDecimal
+	divisor := ten.Pow(decimal.NewFromInt(int64(decimals)))
+	decimalBalance := decimal.NewFromBigInt(rawBalance, 0)
+	decimalAccrued := decimal.NewFromBigInt(rawAccrued, 0)
 
-	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionTime).Hours() / 24)
-	tokenCount, _ := bigTokenCount.Float64()
-	value := (tokenCount * price)
-	accruedTokenCount, _ := bigAccruedTokenCount.Float64()
-	accruedTokenCountPerDay := (accruedTokenCount / daysSinceFirstTransaction)
-	accruedTokenCountPerWeek := (accruedTokenCountPerDay * 7)
-	accruedValue := (accruedTokenCount * price)
-	accruedValuePerDay := (accruedTokenCountPerDay * price)
-	accruedValuePerWeek := (accruedValuePerDay * 7)
-	accruedRatio := (accruedTokenCount / tokenCount)
+	tokenCount := decimalBalance.Div(divisor)
+	accruedTokenCount := decimalAccrued.Div(divisor)
+
+	value := tokenCount.Mul(price)
+	accruedValue := accruedTokenCount.Mul(price)
+	daysSinceFirstTransaction := calculateDaysPriorToNow(firstTransactionTime)
+
+	accruedTokenCountPerDay := accruedTokenCount.Div(daysSinceFirstTransaction)
+	accruedValuePerDay := accruedTokenCountPerDay.Mul(price)
+	accruedTokenCountPerWeek := accruedTokenCountPerDay.Mul(daysPerWeek)
+	accruedValuePerWeek := accruedValuePerDay.Mul(daysPerWeek)
+
+	accruedRatio := accruedTokenCount.Div(tokenCount)
 
 	return AccountTokenStatistics{
-		AccountAddress: accountAddress,
-		AccruedTokenCount: accruedTokenCount,
-		AccruedTokenCountPerDay: accruedTokenCountPerDay,
-		AccruedTokenCountPerWeek: accruedTokenCountPerWeek,
-		AccruedValue: accruedValue,
-		AccruedValuePerDay: accruedValuePerDay,
-		AccruedValuePerWeek: accruedValuePerWeek,
-		AccruedValueRatio: accruedRatio,
-		CoinMarketCapId: coinMarketCapId,
+		AccountAddress:            accountAddress,
+		AccruedTokenCount:         accruedTokenCount,
+		AccruedTokenCountPerDay:   accruedTokenCountPerDay,
+		AccruedTokenCountPerWeek:  accruedTokenCountPerWeek,
+		AccruedValue:              accruedValue,
+		AccruedValuePerDay:        accruedValuePerDay,
+		AccruedValuePerWeek:       accruedValuePerWeek,
+		AccruedValueRatio:         accruedRatio,
+		CoinMarketCapId:           coinMarketCapId,
 		DaysSinceFirstTransaction: daysSinceFirstTransaction,
-		Decimals: decimals,
-		FirstTransactionAt: firstTransactionTime,
-		TokenAddress: tokenAddress,
-		TokenCount: tokenCount,
-		TokenName: tokenName,
-		TokenPrice: price,
-		TokenPriceSource: priceSource,
-		TokenPriceUpdatedAt: priceUpdatedAt,
-		TransactionCount: transactionCount,
-		Value: value,
+		Decimals:                  decimals,
+		FirstTransactionAt:        firstTransactionTime,
+		TokenAddress:              tokenAddress,
+		TokenCount:                tokenCount,
+		TokenName:                 tokenName,
+		TokenPrice:                price,
+		TokenPriceSource:          priceSource,
+		TokenPriceUpdatedAt:       priceUpdatedAt,
+		TransactionCount:          transactionCount,
+		Value:                     value,
 	}, nil
 }
 
-func determineFirstTransaction(transactions []bscscan.TransactionApiResult) (bscscan.TransactionApiResult) {
+func determineFirstTransaction(transactions []bscscan.TransactionApiResult) bscscan.TransactionApiResult {
 	var result bscscan.TransactionApiResult
 
 	if len(transactions) > 0 {
@@ -126,12 +142,12 @@ func determineFirstTransaction(transactions []bscscan.TransactionApiResult) (bsc
 	return result
 }
 
-func mapTokenTransactions(transactions []bscscan.TransactionApiResult) (map[string][]bscscan.TransactionApiResult) {
+func mapTokenTransactions(transactions []bscscan.TransactionApiResult) map[string][]bscscan.TransactionApiResult {
 	result := make(map[string][]bscscan.TransactionApiResult)
 
 	for _, transaction := range transactions {
 		tokenAddress := transaction.ContractAddress
-		tokenTransactions, exists := result[tokenAddress];
+		tokenTransactions, exists := result[tokenAddress]
 
 		if exists {
 			tokenTransactions = append(tokenTransactions, transaction)
@@ -156,10 +172,10 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
 
 	tokenIndex := 0
-	accruedValue := float64(0)
+	accruedValue := decimal.Zero
 	var firstTransactionAt time.Time
 	transactionCount := 0
-	value := float64(0)
+	value := decimal.Zero
 
 	for tokenAddress, tokenTransactions := range transactionsByToken {
 		tokenStatistics, err := df.createAccountTokenStatistics(accountAddress, tokenAddress, tokenTransactions)
@@ -168,9 +184,9 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 			return AccountStatistics{}, err
 		}
 
-		accruedValue += tokenStatistics.AccruedValue
+		accruedValue = accruedValue.Add(tokenStatistics.AccruedValue)
 		transactionCount += tokenStatistics.TransactionCount
-		value += tokenStatistics.Value
+		value = value.Add(tokenStatistics.Value)
 
 		if tokenIndex == 0 {
 			firstTransactionAt = tokenStatistics.FirstTransactionAt
@@ -182,21 +198,22 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 		tokenIndex++
 	}
 
-	accruedValueRatio := (accruedValue / value)
-	daysSinceFirstTransaction := (time.Now().Sub(firstTransactionAt).Hours() / 24)
-	accruedValuePerDay := (accruedValue / daysSinceFirstTransaction)
-	accruedValuePerWeek := (accruedValuePerDay * 7)
+	accruedValueRatio := accruedValue.Div(value)
+
+	daysSinceFirstTransaction := calculateDaysPriorToNow(firstTransactionAt)
+	accruedValuePerDay := accruedValue.Div(daysSinceFirstTransaction)
+	accruedValuePerWeek := accruedValuePerDay.Mul(daysPerWeek)
 
 	return AccountStatistics{
-		AccountAddress: accountAddress,
-		AccruedValue: accruedValue,
-		AccruedValuePerDay: accruedValuePerDay,
+		AccountAddress:      accountAddress,
+		AccruedValue:        accruedValue,
+		AccruedValuePerDay:  accruedValuePerDay,
 		AccruedValuePerWeek: accruedValuePerWeek,
-		AccruedValueRatio: accruedValueRatio,
-		FirstTransactionAt: firstTransactionAt,
-		Tokens: tokens,
-		TransactionCount: transactionCount,
-		Value: value,
+		AccruedValueRatio:   accruedValueRatio,
+		FirstTransactionAt:  firstTransactionAt,
+		Tokens:              tokens,
+		TransactionCount:    transactionCount,
+		Value:               value,
 	}, nil
 }
 
@@ -210,22 +227,22 @@ func (df *DataFetcher) GetAccountStatisticsForToken(accountAddress string, token
 	return df.createAccountTokenStatistics(accountAddress, tokenAddress, transactions)
 }
 
-func (df *DataFetcher) getTokenPrice(tokenAddress string) (float64, int64, string, error) {
+func (df *DataFetcher) getTokenPrice(tokenAddress string) (decimal.Decimal, int64, string, error) {
 	v2Token, err := df.pcsv2Client.GetToken(tokenAddress)
 	source := ""
 
 	if err != nil {
-		return -1, -1, source, err
+		return decimal.Zero, -1, source, err
 	}
 
 	price := v2Token.Data.Price
 	priceUpdatedAt := v2Token.UpdatedAt
 
-	if price == 0 {
+	if price.IsZero() {
 		v1Token, err := df.pcsv1Client.GetToken(tokenAddress)
 
 		if err != nil {
-			return -1, -1, source, err
+			return decimal.Zero, -1, source, err
 		}
 
 		price = v1Token.Data.Price
@@ -239,15 +256,15 @@ func (df *DataFetcher) getTokenPrice(tokenAddress string) (float64, int64, strin
 }
 
 func NewDataFetcher(bscClient *bscscan.BscApiClient,
-		cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore,
-		pcsv1Client *pcsv1.PancakeswapApiClient,
-		pcsv2Client *pcsv2.PancakeswapApiClient) (DataFetcher) {
+	cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore,
+	pcsv1Client *pcsv1.PancakeswapApiClient,
+	pcsv2Client *pcsv2.PancakeswapApiClient) DataFetcher {
 
 	return DataFetcher{
-		bscClient: bscClient,
+		bscClient:              bscClient,
 		cryptocurrencyMapStore: cryptocurrencyMapStore,
-		pcsv1Client: pcsv1Client,
-		pcsv2Client: pcsv2Client,
+		pcsv1Client:            pcsv1Client,
+		pcsv2Client:            pcsv2Client,
 	}
 }
 
@@ -260,4 +277,3 @@ func parseBigInt(value string) (*big.Int, error) {
 
 	return result, nil
 }
-

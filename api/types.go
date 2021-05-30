@@ -1,6 +1,10 @@
 package api
 
-import "time"
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
 
 const (
 	PANCAKE_SWAP_V1 = "PANCAKE_SWAP_V1"
@@ -9,36 +13,36 @@ const (
 
 type AccountStatistics struct {
 	AccountAddress string `json:"accountAddress"`
-	AccruedValue float64 `json:"accruedValue"`
-	AccruedValuePerDay float64 `json:"accruedValuePerDay"`
-	AccruedValuePerWeek float64 `json:"accruedValuePerWeek"`
-	AccruedValueRatio float64 `json:"accruedValueRatio"`
+	AccruedValue decimal.Decimal `json:"accruedValue"`
+	AccruedValuePerDay decimal.Decimal `json:"accruedValuePerDay"`
+	AccruedValuePerWeek decimal.Decimal `json:"accruedValuePerWeek"`
+	AccruedValueRatio decimal.Decimal `json:"accruedValueRatio"`
 	FirstTransactionAt time.Time `json:"firstTransactionAt"`
 	Tokens []AccountTokenStatistics `json:"tokens"`
 	TransactionCount int `json:"transactionCount"`
-	Value float64 `json:"value"`
+	Value decimal.Decimal `json:"value"`
 }
 
 type AccountTokenStatistics struct {
 	AccountAddress string `json:"accountAddress"`
-	AccruedTokenCount float64 `json:"accruedTokenCount"`
-	AccruedTokenCountPerDay float64 `json:"accruedTokenCountPerDay"`
-	AccruedTokenCountPerWeek float64 `json:"accruedTokenCountPerWeek"`
-	AccruedValue float64 `json:"accruedValue"`
-	AccruedValuePerDay float64 `json:"accruedValuePerDay"`
-	AccruedValuePerWeek float64 `json:"accruedValuePerWeek"`
-	AccruedValueRatio float64 `json:"accruedValueRatio"`
+	AccruedTokenCount decimal.Decimal `json:"accruedTokenCount"`
+	AccruedTokenCountPerDay decimal.Decimal `json:"accruedTokenCountPerDay"`
+	AccruedTokenCountPerWeek decimal.Decimal `json:"accruedTokenCountPerWeek"`
+	AccruedValue decimal.Decimal `json:"accruedValue"`
+	AccruedValuePerDay decimal.Decimal `json:"accruedValuePerDay"`
+	AccruedValuePerWeek decimal.Decimal `json:"accruedValuePerWeek"`
+	AccruedValueRatio decimal.Decimal `json:"accruedValueRatio"`
 	CoinMarketCapId int `json:"coinMarketCapId"`
-	DaysSinceFirstTransaction float64 `json:"daysSinceFirstTransaction"`
+	DaysSinceFirstTransaction decimal.Decimal `json:"daysSinceFirstTransaction"`
 	Decimals int `json:"decimals"`
 	FirstTransactionAt time.Time `json:"firstTransactionAt"`
 	TokenAddress string `json:"tokenAddress"`
-	TokenCount float64 `json:"tokenCount"`
+	TokenCount decimal.Decimal `json:"tokenCount"`
 	TokenName string `json:"tokenName"`
-	TokenPrice float64 `json:"tokenPrice"`
+	TokenPrice decimal.Decimal `json:"tokenPrice"`
 	TokenPriceSource string `json:"tokenPriceSource"`
 	TokenPriceUpdatedAt time.Time `json:"tokenPriceUpdatedAt"`
 	TransactionCount int `json:"transactionCount"`
-	Value float64 `json:"value"`
+	Value decimal.Decimal `json:"value"`
 }
 

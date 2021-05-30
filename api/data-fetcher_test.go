@@ -1,31 +1,33 @@
 package api
 
-import "math/big"
-import "strings"
-import "testing"
+import (
+	"math/big"
+	"strings"
+	"testing"
 
-import "github.com/podnov/bag/api/bscscan"
+	"github.com/podnov/bag/api/bscscan"
+)
 
 func Test_calculateAccruedRawTokens(t *testing.T) {
 	givenAccountAddress := "given-account-address"
 	givenSwapAddress := "given-swap-address"
 	givenBalance := big.NewInt(42000)
 
-	givenTransactions := []bscscan.TransactionApiResult {
-		bscscan.TransactionApiResult {
-			From: strings.ToUpper(givenSwapAddress), // addresses are case insensitive
-			Value: "101", // buy
-			To: givenAccountAddress,
+	givenTransactions := []bscscan.TransactionApiResult{
+		{
+			From:  strings.ToUpper(givenSwapAddress), // addresses are case insensitive
+			Value: "101",                             // buy
+			To:    givenAccountAddress,
 		},
-		bscscan.TransactionApiResult {
-			From: strings.ToUpper(givenAccountAddress),
+		{
+			From:  strings.ToUpper(givenAccountAddress),
 			Value: "202", // sell
-			To: givenSwapAddress,
+			To:    givenSwapAddress,
 		},
-		bscscan.TransactionApiResult {
-			From: strings.ToUpper(givenSwapAddress),
+		{
+			From:  strings.ToUpper(givenSwapAddress),
 			Value: "303", // buy
-			To: givenAccountAddress,
+			To:    givenAccountAddress,
 		},
 	}
 
