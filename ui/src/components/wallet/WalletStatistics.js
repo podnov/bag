@@ -95,8 +95,7 @@ class WalletStatistics extends Component {
 								<li key="{token.tokenAddress}-firstTransactionAt"><label>First Transaction:</label> {new Date(token.firstTransactionAt).toLocaleString()}</li>
 								<li key="{token.tokenAddress}-transationCount"><label>Transaction Count:</label> {numberFormatter.format(token.transactionCount)}</li>
 								<li key="{token.tokenAddress}-tokenPrice"><label>Price:</label> {token.tokenPrice}</li>
-								<li key="{token.tokenAddress}-tokenPriceSource"><label>Price Source:</label> {convertPriceSource(token.tokenPriceSource)},&nbsp;
-									<label>Updated At:</label> {new Date(token.tokenPriceUpdatedAt).toLocaleString()}</li>
+								<li key="{token.tokenAddress}-tokenPriceSource"><label>Price Source:</label> {convertPriceSource(token.tokenPriceSource)}</li>
 								<li key="{token.tokenAddress}-tokenCount"><label>Count:</label> {numberFormatter.format(token.tokenCount)}</li>
 								<li key="{token.tokenAddress}-value"><label>Value:</label> {currencyFormatter.format(token.value)}</li>
 								<li key="{token.tokenAddress}-accruedTokenCount"><label>Accrued Count:</label> {numberFormatter.format(token.accruedTokenCount)}&nbsp;|&nbsp;
