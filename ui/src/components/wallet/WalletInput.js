@@ -3,7 +3,11 @@ import {connect} from 'react-redux'
 import './WalletInput.css';
 import {getWallet} from '../../store/actions/walletActions'
 
+const defaultAddress = "0xe453d625DfB485ab5f95Fa4CE689b2a06Ba8B2E7";
+const localStorageWalletAddressKey = "walletAddress";
+
 class WalletInput extends Component {
+
 	constructor(props) {
 		super(props);
 
@@ -15,13 +19,27 @@ class WalletInput extends Component {
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 	}
 
+	componentDidMount() {
+		let initialAddress = localStorage.getItem(localStorageWalletAddressKey);
+
+		if (!initialAddress) {
+			initialAddress = defaultAddress;
+		}
+
+		this.setState({ address: initialAddress });
+		this.props.getWallet(initialAddress);
+	}
+
 	handleAddressChange(event) {
-		this.setState({address: event.target.value});
+		let address = event.target.value;
+
+		localStorage.setItem(localStorageWalletAddressKey, address);
+		this.setState({ address: address });
 	}
 
 	handleFormSubmit(event) {
 		event.preventDefault();
-		this.props.getWallet(this.state.address)
+		this.props.getWallet(this.state.address);
 	}
 
 	render() {
