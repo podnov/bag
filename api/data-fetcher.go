@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
@@ -11,8 +12,7 @@ import (
 
 	"github.com/podnov/bag/api/bscscan"
 	"github.com/podnov/bag/api/coinmarketcap"
-	pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
-	pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
+	"github.com/podnov/bag/api/ox"
 )
 
 var daysPerWeek = decimal.NewFromInt(7)
@@ -23,8 +23,7 @@ var ten = decimal.NewFromInt(10)
 type DataFetcher struct {
 	bscClient              *bscscan.BscApiClient
 	cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore
-	pcsv1Client            *pcsv1.PancakeswapApiClient
-	pcsv2Client            *pcsv2.PancakeswapApiClient
+	oxClient               *ox.OxApiClient
 }
 
 func calculateAccruedRawTokens(accountAddress string, balance *big.Int, transactions []bscscan.TransactionApiResult) (*big.Int, error) {
@@ -228,28 +227,22 @@ func (df *DataFetcher) GetAccountStatisticsForToken(accountAddress string, token
 }
 
 func (df *DataFetcher) getTokenPrice(tokenAddress string) (decimal.Decimal, int64, string, error) {
-	v2Token, err := df.pcsv2Client.GetToken(tokenAddress)
+	priceApiResult, err := df.oxClient.GetQuote(tokenAddress)
 	source := ""
 
 	if err != nil {
 		return decimal.Zero, -1, source, err
 	}
 
-	price := v2Token.Data.Price
-	priceUpdatedAt := v2Token.UpdatedAt
+	price := priceApiResult.Price
+	priceUpdatedAt := (time.Now().UnixNano() / 1e6)
 
-	if price.IsZero() {
-		v1Token, err := df.pcsv1Client.GetToken(tokenAddress)
-
-		if err != nil {
-			return decimal.Zero, -1, source, err
-		}
-
-		price = v1Token.Data.Price
-		priceUpdatedAt = v1Token.UpdatedAt
-		source = PANCAKE_SWAP_V1
+	orders := priceApiResult.Orders
+	if len(orders) == 0 {
+		stuff, _ := json.MarshalIndent(priceApiResult, "", "	")
+		fmt.Printf("Token %s had 0 orders:\n%s\n", tokenAddress, stuff)
 	} else {
-		source = PANCAKE_SWAP_V2
+		source = orders[0].Source
 	}
 
 	return price, priceUpdatedAt, source, nil
@@ -257,14 +250,12 @@ func (df *DataFetcher) getTokenPrice(tokenAddress string) (decimal.Decimal, int6
 
 func NewDataFetcher(bscClient *bscscan.BscApiClient,
 	cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore,
-	pcsv1Client *pcsv1.PancakeswapApiClient,
-	pcsv2Client *pcsv2.PancakeswapApiClient) DataFetcher {
+	oxClient *ox.OxApiClient) DataFetcher {
 
 	return DataFetcher{
 		bscClient:              bscClient,
 		cryptocurrencyMapStore: cryptocurrencyMapStore,
-		pcsv1Client:            pcsv1Client,
-		pcsv2Client:            pcsv2Client,
+		oxClient:               oxClient,
 	}
 }
 

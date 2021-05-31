@@ -9,8 +9,7 @@ import (
 	"github.com/podnov/bag/api"
 	"github.com/podnov/bag/api/bscscan"
 	"github.com/podnov/bag/api/coinmarketcap"
-	pcsv1 "github.com/podnov/bag/api/pancakeswap/v1"
-	pcsv2 "github.com/podnov/bag/api/pancakeswap/v2"
+	"github.com/podnov/bag/api/ox"
 )
 
 func CheckLiveness(c *gin.Context) {
@@ -27,13 +26,11 @@ func CheckRoot(c *gin.Context) {
 
 func createDataFetcher(cryptocurrencyMapStore *coinmarketcap.CryptocurrencyMapStore) api.DataFetcher {
 	bscClient := &bscscan.BscApiClient{}
-	pcsv1Client := &pcsv1.PancakeswapApiClient{}
-	pcsv2Client := &pcsv2.PancakeswapApiClient{}
+	oxClient := &ox.OxApiClient{}
 
 	return api.NewDataFetcher(bscClient,
 		cryptocurrencyMapStore,
-		pcsv1Client,
-		pcsv2Client,
+		oxClient,
 	)
 }
 

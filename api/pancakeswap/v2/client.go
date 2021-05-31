@@ -1,23 +1,24 @@
 package v2
 
-import "encoding/json"
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
 
-import "github.com/go-resty/resty/v2"
+	"github.com/go-resty/resty/v2"
+)
 
 const apiBaseUrl = "https://api.pancakeswap.info/api/v2"
 
 // TODO handle client invocation failures
 
 type PancakeswapApiClient struct {
-
 }
 
-func (c *PancakeswapApiClient) createRestyClient() (*resty.Client) {
+func (c *PancakeswapApiClient) createRestyClient() *resty.Client {
 	return resty.New()
 }
 
-func (c *PancakeswapApiClient) formatTokenUrl(tokenAddress string) (string) {
+func (c *PancakeswapApiClient) formatTokenUrl(tokenAddress string) string {
 	return fmt.Sprintf("%s/tokens/%s", apiBaseUrl, tokenAddress)
 }
 
@@ -43,4 +44,3 @@ func (c *PancakeswapApiClient) GetToken(tokenAddress string) (*TokenApiResult, e
 
 	return &apiResult, nil
 }
-

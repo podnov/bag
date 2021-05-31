@@ -1,6 +1,8 @@
 package v2
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_formatTokenUrl(t *testing.T) {
 	client := PancakeswapApiClient{}
@@ -15,4 +17,3 @@ func Test_formatTokenUrl(t *testing.T) {
 		t.Errorf("Got %s; want %s", actual, expected)
 	}
 }
-
