@@ -53,7 +53,8 @@ function App() {
 					Powered by:&nbsp;
 					<a href="https://bscscan.com" rel="noreferrer" target="_blank">BscScan.com</a> APIs,&nbsp;
 					<a href="https://github.com/pancakeswap/pancake-info-api" rel="noreferrer" target="_blank">Pancakeswap APIs</a>,&nbsp;
-					<a href="https://github.com" rel="noreferrer" target="_blank">GitHub</a>
+					<a href="https://0x.org/docs/api" rel="noreferrer" target="_blank">0x APIs</a>,&nbsp;
+					<a href="https://github.com/podnov/bag" rel="noreferrer" target="_blank">GitHub</a>
 				</div>
 				<AdSenseWidget />
 				© <a href="mailto:cryptobag.podnov@gmail.com" rel="noreferrer" target="_blank">CryptoBag</a> 2021. All Rights Reserved. Tip Jar: 0x5a6d55a598cba3a9fdafd0876c9ca02238c03e38
