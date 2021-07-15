@@ -62,6 +62,10 @@ func (df *DataFetcher) createAccountTokenStatistics(accountAddress string, token
 
 	untypedRawBalance, err := df.bscClient.GetAccountTokenBalance(accountAddress, tokenAddress)
 
+	if untypedRawBalance == "0" {
+		return AccountTokenStatistics{}, nil
+	}
+
 	if err != nil {
 		return AccountTokenStatistics{}, err
 	}
@@ -168,7 +172,7 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 	}
 
 	transactionsByToken := mapTokenTransactions(transactions)
-	tokens := make([]AccountTokenStatistics, len(transactionsByToken))
+	var tokens []AccountTokenStatistics
 
 	tokenIndex := 0
 	accruedValue := decimal.Zero
@@ -183,18 +187,20 @@ func (df *DataFetcher) GetAccountStatistics(accountAddress string) (AccountStati
 			return AccountStatistics{}, err
 		}
 
-		accruedValue = accruedValue.Add(tokenStatistics.AccruedValue)
-		transactionCount += tokenStatistics.TransactionCount
-		value = value.Add(tokenStatistics.Value)
+		if tokenStatistics.TokenName != "" {
+			accruedValue = accruedValue.Add(tokenStatistics.AccruedValue)
+			transactionCount += tokenStatistics.TransactionCount
+			value = value.Add(tokenStatistics.Value)
 
-		if tokenIndex == 0 {
-			firstTransactionAt = tokenStatistics.FirstTransactionAt
-		} else if tokenStatistics.FirstTransactionAt.Before(firstTransactionAt) {
-			firstTransactionAt = tokenStatistics.FirstTransactionAt
+			if tokenIndex == 0 {
+				firstTransactionAt = tokenStatistics.FirstTransactionAt
+			} else if tokenStatistics.FirstTransactionAt.Before(firstTransactionAt) {
+				firstTransactionAt = tokenStatistics.FirstTransactionAt
+			}
+
+			tokens = append(tokens, tokenStatistics)
+			tokenIndex++
 		}
-
-		tokens[tokenIndex] = tokenStatistics
-		tokenIndex++
 	}
 
 	accruedValueRatio := accruedValue.Div(value)
