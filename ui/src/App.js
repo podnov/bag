@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet'
 import './App.css';
 import WalletInput from './components/wallet/WalletInput';
 import WalletStatistics from './components/wallet/WalletStatistics';
-import AdSenseWidget from './components/adsense/AdSenseWidget';
 
 function App() {
 
@@ -38,7 +37,6 @@ function App() {
 		<div className="App">
 			<Helmet>
 				<title>CryptoBag</title>
-				<script data-ad-client="ca-pub-6526798120378756" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 			</Helmet>
 			<header>
 				<h1>CryptoBag</h1>
@@ -56,8 +54,7 @@ function App() {
 					<a href="https://0x.org/docs/api" rel="noreferrer" target="_blank">0x APIs</a>,&nbsp;
 					<a href="https://github.com/podnov/bag" rel="noreferrer" target="_blank">GitHub</a>
 				</div>
-				<AdSenseWidget />
-				© <a href="mailto:cryptobag.podnov@gmail.com" rel="noreferrer" target="_blank">CryptoBag</a> 2021. All Rights Reserved. Tip Jar: 0x5a6d55a598cba3a9fdafd0876c9ca02238c03e38
+				© <a href="mailto:cryptobag.podnov@gmail.com" rel="noreferrer" target="_blank">CryptoBag</a> 2021. All Rights Reserved.
 			</footer>
 
 			<Modal
